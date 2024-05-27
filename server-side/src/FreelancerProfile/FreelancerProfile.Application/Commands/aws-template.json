@@ -1,0 +1,83 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Common AWS Infrastructure for FreelancerProfile Command handlers",
+    "Resources": {
+      "FreelancerProfileWriteModel": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "FreelancerProfileWriteModel",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "AggregateId",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            {
+              "AttributeName": "AggregateId",
+              "KeyType": "HASH"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      },
+      "FreelancerProfileLambdaCommandRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "FreelancerProfileLambdaCommandRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "FreelancerProfileWriteModel",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Outputs": {
+        "FreelancerProfileLambdaCommandRoleArn": {
+            "Description": "ARN of the IAM role for Lambda FreelancerProfile Commands execution",
+            "Value": {
+                "Fn::GetAtt": [
+                    "FreelancerProfileLambdaCommandRole",
+                    "Arn"
+                ]
+            }
+        }
+    }
+}
