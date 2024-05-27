@@ -15,7 +15,7 @@
     "function-timeout"      : 30,
     "function-handler"      : "ChooseRole::ChooseRole.Function::FunctionHandler",
     "function-name"         : "ChooseRole",
-    "s3-bucket"             : "serverless-service1",
+    "s3-bucket"             : "identity-service1",
     "template"              : "serverless.template",
     "stack-name"            : "identity-service"
 }

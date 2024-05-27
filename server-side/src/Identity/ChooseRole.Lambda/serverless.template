@@ -84,6 +84,20 @@
                     "cognito-idp:ListUsers"
                   ],
                   "Resource": "arn:aws:cognito-idp:eu-central-1:891376935045:userpool/eu-central-1_yP2OhxI3R"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "sns:Publish",
+                  "Resource": {
+                    "Ref": "FreelancerRegisteredTopic"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "sns:Publish",
+                  "Resource": {
+                    "Ref": "EmployeerRegisteredTopic"
+                  }
                 }
               ]
             }
@@ -123,6 +137,16 @@
         "FunctionName": "ChooseRole",
         "Runtime": "dotnet8",
         "CodeUri": ".",
+        "Environment": {
+          "Variables": {
+            "FREELANCER_REGISTERED_TOPIC_ANR": {
+              "Ref": "FreelancerRegisteredTopic"
+            },
+            "EMPLOYEER_REGISTERED_TOPIC_ANR": {
+              "Ref": "EmployeerRegisteredTopic"
+            }
+          }
+        },
         "MemorySize": 512,
         "Timeout": 30,
         "Policies": [
@@ -131,7 +155,7 @@
         "PackageType": "Zip",
         "Handler": "ChooseRole.Lambda::ChooseRole.Lambda.Function_FunctionHandler_Generated::FunctionHandler",
         "Layers": [
-          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:1"
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:2"
         ],
         "Events": {
           "RootPut": {
@@ -148,6 +172,35 @@
             "Arn"
           ]
         }
+      },
+      "DependsOn": [
+        "ChooseRoleIAM"
+      ]
+    },
+    "FreelancerRegisteredTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "FreelancerRegisteredTopic"
+      }
+    },
+    "EmployeerRegisteredTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "EmployeerRegisteredTopic"
+      }
+    }
+  },
+  "Outputs": {
+    "FreelancerRegisteredTopic": {
+      "Description": "ARN of the FreelancerRegistered topic",
+      "Value": {
+        "Ref": "FreelancerRegisteredTopic"
+      }
+    },
+    "EmployeerRegisteredTopic": {
+      "Description": "ARN of the EmployeerRegistered topic",
+      "Value": {
+        "Ref": "EmployeerRegisteredTopic"
       }
     }
   }

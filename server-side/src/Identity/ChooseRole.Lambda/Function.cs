@@ -6,6 +6,9 @@ using Amazon.Lambda.Annotations;
 using Amazon.Lambda.Annotations.APIGateway;
 using System.IdentityModel.Tokens.Jwt;
 using Common.Layer.Security;
+using Amazon.SimpleNotificationService;
+using System.Net;
+using Amazon.SimpleNotificationService.Model;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -19,7 +22,13 @@ public record RequestBody
 
 public class Function
 {
-    private static readonly AmazonCognitoIdentityProviderClient _cognitoClient = new();
+    private ILambdaContext _context;
+
+    private readonly AmazonCognitoIdentityProviderClient _cognitoClient = new();
+    private readonly IAmazonSimpleNotificationService _snsClient = new AmazonSimpleNotificationServiceClient();
+
+    private readonly string _freelancerRegisteredTopicArn = Environment.GetEnvironmentVariable("FREELANCER_REGISTERED_TOPIC_ANR");
+    private readonly string _employeerRegisteredTopicArn = Environment.GetEnvironmentVariable("EMPLOYEER_DELETED_TOPIC_ARN");
 
     [LambdaFunction()]
     [HttpApi(LambdaHttpMethod.Put, "/identity-service/role")]
@@ -28,10 +37,12 @@ public class Function
         [FromHeader(Name = "Authorization")] string token,
         ILambdaContext context)
     {
+        _context = context;
         try
         {
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             var username = jwtToken.GetUsername();
+            var sub = jwtToken.Subject;
 
             var response = await _cognitoClient.AdminAddUserToGroupAsync(new AdminAddUserToGroupRequest
             {
@@ -39,6 +50,11 @@ public class Function
                 Username = username,
                 GroupName = requestBody.Role.ToString()
             });
+
+            if (response.HttpStatusCode == HttpStatusCode.OK)
+            {
+                await PublishTopic(requestBody.Role, sub);
+            }
 
             return new APIGatewayProxyResponse()
             {
@@ -55,6 +71,21 @@ public class Function
                 Body = ex.Message
             };
         }
+    }
+
+    private async Task PublishTopic(Role role, string sub)
+    {
+        var topicArn = role == Role.Freelancer ? _freelancerRegisteredTopicArn : _employeerRegisteredTopicArn;
+        _context.Logger.LogInformation(topicArn);
+        var request = new PublishRequest()
+        {
+            TopicArn = topicArn,
+            Message = sub
+        };
+
+        var response = await _snsClient.PublishAsync(request);
+
+        _context.Logger.LogLine($"Message sent to SNS topic: {response.MessageId}");
     }
 }
 
