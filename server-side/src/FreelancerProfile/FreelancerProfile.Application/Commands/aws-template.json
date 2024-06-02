@@ -2,21 +2,23 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Common AWS Infrastructure for FreelancerProfile Command handlers",
     "Resources": {
-      "FreelancerProfileWriteModel": {
+      "FPEventStore": {
         "Type": "AWS::DynamoDB::Table",
         "Properties": {
-          "TableName": "FreelancerProfileWriteModel",
+          "TableName": "FPEventStore",
           "AttributeDefinitions": [
+            {
+              "AttributeName": "EventId",
+              "AttributeType": "S"
+            },
             {
               "AttributeName": "AggregateId",
               "AttributeType": "S"
             }
           ],
           "KeySchema": [
-            {
-              "AttributeName": "AggregateId",
-              "KeyType": "HASH"
-            }
+            { "AttributeName": "AggregateId", "KeyType": "HASH" },
+            { "AttributeName": "EventId", "KeyType": "RANGE" }
           ],
           "ProvisionedThroughput": {
             "ReadCapacityUnits": 5,
@@ -24,10 +26,10 @@
           }
         }
       },
-      "FreelancerProfileLambdaCommandRole": {
+      "FPLambdaCommandRole": {
         "Type": "AWS::IAM::Role",
         "Properties": {
-          "RoleName": "FreelancerProfileLambdaCommandRole",
+          "RoleName": "FPLambdaCommandRole",
           "AssumeRolePolicyDocument": {
             "Version": "2012-10-17",
             "Statement": [
@@ -53,31 +55,138 @@
                       "dynamodb:UpdateItem",
                       "dynamodb:GetItem",
                       "dynamodb:Query",
-                      "dynamodb:Scan"
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
                     ],
                     "Resource": {
                       "Fn::GetAtt": [
-                        "FreelancerProfileWriteModel",
+                        "FPEventStore",
                         "Arn"
                       ]
                     }
                   }
                 ]
               }
+            },
+            {
+              "PolicyName": "LambdaSQSPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "sqs:ReceiveMessage",
+                      "sqs:DeleteMessage",
+                      "sqs:GetQueueAttributes"
+                    ],
+                    "Resource": "arn:aws:sqs:eu-central-1:891376935045:FPQueue"
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": "logs:*",
+                    "Resource": "*"
+                  }
+                ]
+              }
             }
           ]
+        }
+      },
+      "FPQueue": {
+        "Type": "AWS::SQS::Queue",
+        "Properties": {
+          "QueueName": "FPQueue"
+        }
+      },
+      "SQSQueuePolicy": {
+        "Type": "AWS::SQS::QueuePolicy",
+        "Properties": {
+          "Queues": [
+            {
+              "Ref": "FPQueue"
+            }
+          ],
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "sns.amazonaws.com"
+                },
+                "Action": "sqs:SendMessage",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "FPQueue",
+                    "Arn"
+                  ]
+                },
+                "Condition": {
+                  "ArnEquals": {
+                    "aws:SourceArn": {
+                      "Fn::ImportValue": "FreelancerRegisteredTopic"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "FreelancerRegisteredTopicSubscription": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Protocol": "sqs",
+          "Endpoint": {
+            "Fn::GetAtt": [
+              "FPQueue",
+              "Arn"
+            ]
+          },
+          "TopicArn": {
+            "Fn::ImportValue": "FreelancerRegisteredTopic"
+          }
         }
       }
     },
     "Outputs": {
-        "FreelancerProfileLambdaCommandRoleArn": {
+        "FPLambdaCommandRoleArn": {
             "Description": "ARN of the IAM role for Lambda FreelancerProfile Commands execution",
             "Value": {
                 "Fn::GetAtt": [
-                    "FreelancerProfileLambdaCommandRole",
+                    "FPLambdaCommandRole",
                     "Arn"
                 ]
+            },
+            "Export": {
+              "Name": "FPLambdaCommandRoleArn"
             }
+        },
+        "FPEventStoreArn": {
+          "Description": "ARN of the FP DynamoDB Event Store (Write Model)",
+          "Value": {
+              "Fn::GetAtt": [
+                  "FPEventStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "FPEventStoreArn"
+          }
+        },
+        "FPQueueArn": {
+          "Description": "SQS",
+          "Value": {
+              "Fn::GetAtt": [
+                  "FPQueue",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "FPQueueArn"
+          }
         }
     }
 }

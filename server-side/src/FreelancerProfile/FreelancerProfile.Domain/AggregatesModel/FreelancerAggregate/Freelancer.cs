@@ -31,18 +31,15 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
 
         public Freelancer() { }
 
-        public static Freelancer Create(Guid userId, string firstName, string lastName, Contact contact)
+        public static Freelancer Create(Guid userId)
         {
             var freelancer = new Freelancer()
             {
                 Id = Guid.NewGuid(),
-                UserId = userId,
-                FirstName = firstName,
-                LastName = lastName,
-                Contact = contact
+                UserId = userId
             };
 
-            var @event = new FreelancerCreated(freelancer.Id, userId, firstName, lastName, contact);
+            var @event = new FreelancerCreated(freelancer.Id, userId);
             freelancer.Changes.Add(@event);
 
             return freelancer;
@@ -177,9 +174,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         {
             Id = @event.AggregateId;
             UserId = @event.UserId;
-            FirstName = @event.FirstName;
-            LastName = @event.LastName;
-            Contact = @event.Contact;
         }
 
         private void When(ProfileSetupCompleted @event)

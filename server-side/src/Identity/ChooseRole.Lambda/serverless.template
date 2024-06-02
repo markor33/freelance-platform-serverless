@@ -135,7 +135,7 @@
       },
       "Properties": {
         "FunctionName": "ChooseRole",
-        "Runtime": "dotnet8",
+        "Runtime": "dotnet6",
         "CodeUri": ".",
         "Environment": {
           "Variables": {
@@ -195,12 +195,18 @@
       "Description": "ARN of the FreelancerRegistered topic",
       "Value": {
         "Ref": "FreelancerRegisteredTopic"
+      },
+      "Export": {
+        "Name": "FreelancerRegisteredTopic"
       }
     },
     "EmployeerRegisteredTopic": {
       "Description": "ARN of the EmployeerRegistered topic",
       "Value": {
         "Ref": "EmployeerRegisteredTopic"
+      },
+      "Export": {
+        "Name": "EmployeerRegisteredTopic"
       }
     }
   }

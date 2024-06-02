@@ -6,6 +6,6 @@ namespace FreelancerProfile.Domain.Repositories
     public interface IFreelancerRepository : IRepository<Freelancer>
     {
         Task<Freelancer> GetByIdAsync(Guid id);
-        Task<Freelancer> CreateAsync(Freelancer freelancer);
+        Task SaveAsync(Freelancer freelancer);
     }
 }

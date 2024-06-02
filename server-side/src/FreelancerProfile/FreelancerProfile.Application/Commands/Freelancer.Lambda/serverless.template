@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Starting template for an AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
+  "Parameters": {},
+  "Resources": {
+    "CreateFreelancer": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "CreateFreelancer",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Handlers.CreateFreelancer::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess",
+          "AmazonSQSReadOnlyAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfilePersistanceWriteModel:2",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+    "CreateFreelancerSQSMapping": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": { "Fn::ImportValue": "FPQueueArn" },
+        "FunctionName": {
+          "Ref": "CreateFreelancer"
+        }
+      }
+    }
+  }
+}
