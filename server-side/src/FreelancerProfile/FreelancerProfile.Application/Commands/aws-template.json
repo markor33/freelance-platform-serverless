@@ -68,86 +68,8 @@
                   }
                 ]
               }
-            },
-            {
-              "PolicyName": "LambdaSQSPolicy",
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "sqs:ReceiveMessage",
-                      "sqs:DeleteMessage",
-                      "sqs:GetQueueAttributes"
-                    ],
-                    "Resource": "arn:aws:sqs:eu-central-1:891376935045:FPQueue"
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": "logs:*",
-                    "Resource": "*"
-                  }
-                ]
-              }
             }
           ]
-        }
-      },
-      "FPQueue": {
-        "Type": "AWS::SQS::Queue",
-        "Properties": {
-          "QueueName": "FPQueue"
-        }
-      },
-      "SQSQueuePolicy": {
-        "Type": "AWS::SQS::QueuePolicy",
-        "Properties": {
-          "Queues": [
-            {
-              "Ref": "FPQueue"
-            }
-          ],
-          "PolicyDocument": {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "sns.amazonaws.com"
-                },
-                "Action": "sqs:SendMessage",
-                "Resource": {
-                  "Fn::GetAtt": [
-                    "FPQueue",
-                    "Arn"
-                  ]
-                },
-                "Condition": {
-                  "ArnEquals": {
-                    "aws:SourceArn": {
-                      "Fn::ImportValue": "FreelancerRegisteredTopic"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      },
-      "FreelancerRegisteredTopicSubscription": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Protocol": "sqs",
-          "Endpoint": {
-            "Fn::GetAtt": [
-              "FPQueue",
-              "Arn"
-            ]
-          },
-          "TopicArn": {
-            "Fn::ImportValue": "FreelancerRegisteredTopic"
-          }
         }
       }
     },
@@ -174,18 +96,6 @@
           },
           "Export": {
             "Name": "FPEventStoreArn"
-          }
-        },
-        "FPQueueArn": {
-          "Description": "SQS",
-          "Value": {
-              "Fn::GetAtt": [
-                  "FPQueue",
-                  "Arn"
-              ]
-          },
-          "Export": {
-            "Name": "FPQueueArn"
           }
         }
     }

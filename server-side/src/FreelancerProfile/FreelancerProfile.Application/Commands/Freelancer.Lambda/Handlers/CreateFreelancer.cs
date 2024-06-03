@@ -1,6 +1,5 @@
 ﻿using Amazon.Lambda.Core;
-using Amazon.Lambda.SQSEvents;
-using Common.Layer.Extensions;
+using Common.Layer.EventBus;
 using FreelancerCommands.Lambda.IntegrationEvents;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate;
 using FreelancerProfile.Domain.Repositories;
@@ -17,19 +16,11 @@ namespace FreelancerCommands.Lambda.Handlers
             _repository = new FreelancerRepository();
         }
 
-        public async Task FunctionHandler(SQSEvent sqsEvent, ILambdaContext context)
+        public async Task FunctionHandler(EventBusEvent<FreelancerRegisteredIntegrationEvent> @event, ILambdaContext context)
         {
-            var freelancerRegisteredEvents = sqsEvent.Records
-                .Select(sqsMessage => sqsMessage.DeserializeSNSMessage<FreelancerRegisteredIntegrationEvent>());
-            var tasks = freelancerRegisteredEvents.Select(@event => IntegrationEventHandler(@event));
-
-            await Task.WhenAll(tasks);
-        }
-
-        private async Task IntegrationEventHandler(FreelancerRegisteredIntegrationEvent @event)
-        {
-            var freelancer = Freelancer.Create(@event.UserId);
+            var freelancer = Freelancer.Create(@event.Detail.UserId);
             await _repository.SaveAsync(freelancer);
         }
+
     }
 }

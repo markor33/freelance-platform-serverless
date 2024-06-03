@@ -18,22 +18,57 @@
           "Fn::ImportValue": "FPLambdaCommandRoleArn"
         },
         "Policies": [
-          "AWSLambda_FullAccess",
-          "AmazonSQSReadOnlyAccess"
+          "AWSLambda_FullAccess"
         ],
         "Layers": [
           "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfilePersistanceWriteModel:2",
-          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:1"
         ]
       }
     },
-    "CreateFreelancerSQSMapping": {
-      "Type": "AWS::Lambda::EventSourceMapping",
+    "FreelancerRegisteredRule": {
+      "Type": "AWS::Events::Rule",
       "Properties": {
-        "BatchSize": 10,
-        "EventSourceArn": { "Fn::ImportValue": "FPQueueArn" },
+        "Name": "FreelancerRegisteredRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "identity-service"
+          ],
+          "detail-type": [
+            "FreelancerRegisteredIntegrationEvent"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CreateFreelancer",
+                "Arn"
+              ]
+            },
+            "Id": "FreelancerRegisteredTarget"
+          }
+        ]
+      }
+    },
+    "PermissionForEventBridgeToInvokeLambda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
         "FunctionName": {
           "Ref": "CreateFreelancer"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FreelancerRegisteredRule",
+            "Arn"
+          ]
         }
       }
     }

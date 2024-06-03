@@ -1,0 +1,25 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "FPEventBus": {
+      "Type": "AWS::Events::EventBus",
+      "Properties": {
+        "Name": "FreelancePlatformEventBus"
+      }
+    }
+  },
+  "Outputs": {
+    "FPEventBusArn": {
+      "Description": "ARN of the Freelancer Platform event bus",
+      "Value": {
+        "Fn::GetAtt": [
+          "FPEventBus",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "FPEventBusArn"
+      }
+    }
+  }
+}

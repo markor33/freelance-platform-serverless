@@ -46,7 +46,7 @@
           "Type": "AWS_PROXY",
           "IntegrationHttpMethod": "POST",
           "Uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChooseRoleLambdaFunctionFunctionHandlerGenerated.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChooseRole.Arn}/invocations"
           }
         }
       }
@@ -87,16 +87,11 @@
                 },
                 {
                   "Effect": "Allow",
-                  "Action": "sns:Publish",
+                  "Action": [
+                    "events:PutEvents"
+                  ],
                   "Resource": {
-                    "Ref": "FreelancerRegisteredTopic"
-                  }
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": "sns:Publish",
-                  "Resource": {
-                    "Ref": "EmployeerRegisteredTopic"
+                    "Fn::ImportValue": "FPEventBusArn"
                   }
                 }
               ]
@@ -109,7 +104,7 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
-          "Ref": "ChooseRoleLambdaFunctionFunctionHandlerGenerated"
+          "Ref": "ChooseRole"
         },
         "Action": "lambda:InvokeFunction",
         "Principal": "apigateway.amazonaws.com",
@@ -125,88 +120,35 @@
         }
       }
     },
-    "ChooseRoleLambdaFunctionFunctionHandlerGenerated": {
+    "ChooseRole": {
       "Type": "AWS::Serverless::Function",
-      "Metadata": {
-        "Tool": "Amazon.Lambda.Annotations",
-        "SyncedEvents": [
-          "RootPut"
-        ]
-      },
       "Properties": {
         "FunctionName": "ChooseRole",
-        "Runtime": "dotnet6",
-        "CodeUri": ".",
-        "Environment": {
-          "Variables": {
-            "FREELANCER_REGISTERED_TOPIC_ANR": {
-              "Ref": "FreelancerRegisteredTopic"
-            },
-            "EMPLOYEER_REGISTERED_TOPIC_ANR": {
-              "Ref": "EmployeerRegisteredTopic"
-            }
-          }
-        },
-        "MemorySize": 512,
+        "Handler": "ChooseRole.Lambda::ChooseRole.Lambda.Function::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
         "Timeout": 30,
-        "Policies": [
-          "AWSLambdaBasicExecutionRole"
-        ],
-        "PackageType": "Zip",
-        "Handler": "ChooseRole.Lambda::ChooseRole.Lambda.Function_FunctionHandler_Generated::FunctionHandler",
-        "Layers": [
-          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:2"
-        ],
-        "Events": {
-          "RootPut": {
-            "Type": "HttpApi",
-            "Properties": {
-              "Path": "/identity-service/role",
-              "Method": "PUT"
-            }
-          }
-        },
         "Role": {
           "Fn::GetAtt": [
             "ChooseRoleIAM",
             "Arn"
           ]
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "EVENT_BUS": { "Fn::ImportValue": "FPEventBusArn" },
+            "SERVICE_NAME": "identity-service",
+            "USER_POOL_ID": "eu-central-1_yP2OhxI3R"
+          }
         }
-      },
-      "DependsOn": [
-        "ChooseRoleIAM"
-      ]
-    },
-    "FreelancerRegisteredTopic": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "TopicName": "FreelancerRegisteredTopic"
-      }
-    },
-    "EmployeerRegisteredTopic": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "TopicName": "EmployeerRegisteredTopic"
-      }
-    }
-  },
-  "Outputs": {
-    "FreelancerRegisteredTopic": {
-      "Description": "ARN of the FreelancerRegistered topic",
-      "Value": {
-        "Ref": "FreelancerRegisteredTopic"
-      },
-      "Export": {
-        "Name": "FreelancerRegisteredTopic"
-      }
-    },
-    "EmployeerRegisteredTopic": {
-      "Description": "ARN of the EmployeerRegistered topic",
-      "Value": {
-        "Ref": "EmployeerRegisteredTopic"
-      },
-      "Export": {
-        "Name": "EmployeerRegisteredTopic"
       }
     }
   }

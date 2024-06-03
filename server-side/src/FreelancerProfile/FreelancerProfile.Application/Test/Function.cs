@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using Common.Layer.EventBus;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Enums;
@@ -12,6 +13,11 @@ using WriteModel;
 
 namespace Test;
 
+public class FreelancerRegisteredIntegrationEvent
+{
+    public Guid UserId { get; set; }
+}
+
 public class Function
 {
     
@@ -21,11 +27,8 @@ public class Function
     /// <param name="input">The event for the Lambda function handler to process.</param>
     /// <param name="context">The ILambdaContext that provides methods for logging and describing the Lambda environment.</param>
     /// <returns></returns>
-    public async Task<string> FunctionHandler(string input, ILambdaContext context)
+    public async Task<string> FunctionHandler(EventBusEvent<FreelancerRegisteredIntegrationEvent> @event, ILambdaContext context)
     {
-        var repo = new FreelancerRepository();
-        var freelancer = await repo.GetByIdAsync(Guid.Parse("d1c0a707-1bbb-4fd7-ad83-02f7af812873"));
-        context.Logger.LogInformation(JsonSerializer.Serialize(freelancer));
-        return "OK";
+        return @event.Detail.UserId.ToString();
     }
 }
