@@ -2,13 +2,12 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
-using Amazon.Lambda.Annotations;
-using Amazon.Lambda.Annotations.APIGateway;
 using System.IdentityModel.Tokens.Jwt;
 using Common.Layer.Security;
-using Amazon.SimpleNotificationService;
 using System.Net;
-using Amazon.SimpleNotificationService.Model;
+using Amazon.EventBridge;
+using System.Text.Json;
+using EventBus;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -20,40 +19,45 @@ public record RequestBody
     public Role Role { get; set; }
 }
 
+public record FreelancerRegisteredIntegrationEvent(Guid UserId)
+{
+    public Guid UserId { get; private set; } = UserId;
+}
+
 public class Function
 {
     private ILambdaContext _context;
 
     private readonly AmazonCognitoIdentityProviderClient _cognitoClient = new();
-    private readonly IAmazonSimpleNotificationService _snsClient = new AmazonSimpleNotificationServiceClient();
+    private readonly IAmazonEventBridge _eventBridgeClient = new AmazonEventBridgeClient();
 
-    private readonly string _freelancerRegisteredTopicArn = Environment.GetEnvironmentVariable("FREELANCER_REGISTERED_TOPIC_ANR");
-    private readonly string _employeerRegisteredTopicArn = Environment.GetEnvironmentVariable("EMPLOYEER_DELETED_TOPIC_ARN");
+    private readonly string _userPoolId = Environment.GetEnvironmentVariable("USER_POOL_ID");
 
-    [LambdaFunction()]
-    [HttpApi(LambdaHttpMethod.Put, "/identity-service/role")]
-    public async Task<APIGatewayProxyResponse> FunctionHandler(
-        [FromBody] RequestBody requestBody,
-        [FromHeader(Name = "Authorization")] string token,
-        ILambdaContext context)
+    public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
         try
         {
-            var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
             var username = jwtToken.GetUsername();
             var sub = jwtToken.Subject;
 
-            var response = await _cognitoClient.AdminAddUserToGroupAsync(new AdminAddUserToGroupRequest
+            if (await IsUserAlreadyInGroup(username))
             {
-                UserPoolId = "eu-central-1_yP2OhxI3R",
-                Username = username,
-                GroupName = requestBody.Role.ToString()
-            });
+                return new APIGatewayProxyResponse()
+                {
+                    Body = "User is already in a group",
+                    StatusCode = 400
+                };
+            }
+
+            var requestBody = JsonSerializer.Deserialize<RequestBody>(request.Body);
+
+            var response = await AddUserToGroup(username, requestBody.Role);
 
             if (response.HttpStatusCode == HttpStatusCode.OK)
             {
-                await PublishTopic(requestBody.Role, sub);
+                await PublishIntegrationEvent(requestBody.Role, sub);
             }
 
             return new APIGatewayProxyResponse()
@@ -73,19 +77,43 @@ public class Function
         }
     }
 
-    private async Task PublishTopic(Role role, string sub)
+    private async Task<bool> IsUserAlreadyInGroup(string username)
     {
-        var topicArn = role == Role.Freelancer ? _freelancerRegisteredTopicArn : _employeerRegisteredTopicArn;
-        _context.Logger.LogInformation(topicArn);
-        var request = new PublishRequest()
+        var groupsResponse = await _cognitoClient.AdminListGroupsForUserAsync(new AdminListGroupsForUserRequest
         {
-            TopicArn = topicArn,
-            Message = sub
-        };
+            UserPoolId = _userPoolId,
+            Username = username
+        });
 
-        var response = await _snsClient.PublishAsync(request);
+        return groupsResponse.Groups.Any();
+    }
 
-        _context.Logger.LogLine($"Message sent to SNS topic: {response.MessageId}");
+    private async Task<AdminAddUserToGroupResponse> AddUserToGroup(string username, Role role)
+    {
+        var response = await _cognitoClient.AdminAddUserToGroupAsync(new AdminAddUserToGroupRequest
+        {
+            UserPoolId = _userPoolId,
+            Username = username,
+            GroupName = role.ToString()
+        });
+
+        return response;
+    }
+
+    private async Task PublishIntegrationEvent(Role role, string sub)
+    {
+        var @event = new FreelancerRegisteredIntegrationEvent(Guid.Parse(sub));
+
+        var response = await _eventBridgeClient.PublishEvent<FreelancerRegisteredIntegrationEvent>(@event);
+
+        if (response.FailedEntryCount > 0)
+        {
+            _context.Logger.LogError($"Failed to publish integration event: {response.Entries[0].ErrorCode} - {response.Entries[0].ErrorMessage}");
+        }
+        else
+        {
+            _context.Logger.LogLine($"Event sent to EventBridge with ID: {response.Entries[0].EventId}");
+        }
     }
 }
 

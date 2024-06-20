@@ -1,0 +1,184 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "FPLambdaQuerySyncRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "FPLambdaQuerySyncRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": { "Fn::ImportValue": "FPReadModelStoreArn" }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+
+    "FreelancerCreatedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "FreelancerCreatedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "FreelancerCreated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "FreelancerCreatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "FreelancerCreatedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionFreelancerCreated": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "FreelancerCreatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FreelancerCreatedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "FreelancerCreatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "FreelancerCreatedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.FreelancerCreatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "ProfileSetupCompletedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ProfileSetupCompletedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "ProfileSetupCompleted"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ProfileSetupCompletedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "ProfileSetupCompletedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionProfileSetupCompleted": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProfileSetupCompletedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ProfileSetupCompletedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ProfileSetupCompletedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "ProfileSetupCompletedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProfileSetupCompletedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    }
+  }
+}

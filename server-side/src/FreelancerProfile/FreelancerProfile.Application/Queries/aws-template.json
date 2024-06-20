@@ -1,0 +1,133 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Common AWS Infrastructure for FreelancerProfile Command handlers",
+    "Resources": {
+      "FPReadModelStore": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "FPReadModelStore",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      },
+      "FPLambdaQueryRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "FPLambdaQueryRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          ],
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "FPReadModelStore",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyLanguageRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "LanguageRepoArn" }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyProfessionRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "ProfessionRepoArn" }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Outputs": {
+        "FPLambdaQueryRoleArn": {
+          "Description": "ARN of the IAM role for Lambda FreelancerProfile Query execution",
+          "Value": {
+              "Fn::GetAtt": [
+                  "FPLambdaQueryRole",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "FPLambdaQueryRoleArn"
+          }
+        },
+        "FPReadModelStoreArn": {
+          "Description": "ARN of the FP DynamoDB Read Model Store",
+          "Value": {
+              "Fn::GetAtt": [
+                  "FPReadModelStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "FPReadModelStoreArn"
+          }
+        }
+    }
+}

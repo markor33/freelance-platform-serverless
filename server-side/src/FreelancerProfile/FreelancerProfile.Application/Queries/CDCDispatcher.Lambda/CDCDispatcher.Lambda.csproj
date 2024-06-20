@@ -11,10 +11,10 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.305.6" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common\Common.Layer.csproj" />
-    <ProjectReference Include="..\..\EventBus\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\..\..\..\EventBus\EventBus\EventBus.csproj" />
   </ItemGroup>
 </Project>
