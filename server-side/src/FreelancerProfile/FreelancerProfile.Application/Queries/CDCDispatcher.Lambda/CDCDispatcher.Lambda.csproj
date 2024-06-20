@@ -11,11 +11,10 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Common\Common.Layer.csproj" />
-    <ProjectReference Include="..\..\FreelancerProfile.Domain\FreelancerProfile.Domain.csproj" />
-    <ProjectReference Include="..\..\FreelancerProfile.Persistence\WriteModel\EventStore.csproj" />
+    <ProjectReference Include="..\..\..\..\EventBus\EventBus\EventBus.csproj" />
   </ItemGroup>
 </Project>

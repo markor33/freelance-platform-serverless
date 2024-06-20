@@ -27,5 +27,24 @@ public static class AmazonEventBridgeExtensions
 
         return await eventBridgeClient.PutEventsAsync(request);
     }
+
+    public static async Task<PutEventsResponse> PublishEvent(this IAmazonEventBridge eventBridgeClient, string detailType, string detail)
+    {
+        var request = new PutEventsRequest
+        {
+            Entries = new List<PutEventsRequestEntry>
+            {
+                new PutEventsRequestEntry
+                {
+                    EventBusName = _eventBusName,
+                    Source = _serviceName,
+                    DetailType = detailType,
+                    Detail = detail,
+                }
+            }
+        };
+
+        return await eventBridgeClient.PutEventsAsync(request);
+    }
 }
 

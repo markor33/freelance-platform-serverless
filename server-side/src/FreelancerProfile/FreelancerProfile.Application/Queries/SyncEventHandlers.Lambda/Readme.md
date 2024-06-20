@@ -38,12 +38,12 @@ If already installed check if new version is available.
 
 Execute unit tests
 ```
-    cd "Test/test/Test.Tests"
+    cd "SyncEventHandlers.Lambda/test/SyncEventHandlers.Lambda.Tests"
     dotnet test
 ```
 
 Deploy function to AWS Lambda
 ```
-    cd "Test/src/Test"
+    cd "SyncEventHandlers.Lambda/src/SyncEventHandlers.Lambda"
     dotnet lambda deploy-function
 ```

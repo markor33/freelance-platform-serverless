@@ -7,7 +7,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
     {
         public string Name { get; private set; }
         public string Description { get; private set; }
-        public Guid ProfessionId { get; private set; }
         [JsonIgnore]
         public Profession Profession { get; private set; }
         [JsonIgnore]
@@ -16,10 +15,9 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
         public Skill() { }
 
         [JsonConstructor]
-        public Skill(Guid id, Guid professionId, string name, string description)
+        public Skill(Guid id, string name, string description)
         {
             Id = id;
-            ProfessionId = professionId;
             Name = name;
             Description = description;
         }

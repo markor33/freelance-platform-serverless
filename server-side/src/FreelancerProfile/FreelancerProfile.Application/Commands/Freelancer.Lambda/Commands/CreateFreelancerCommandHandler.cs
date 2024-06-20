@@ -5,13 +5,13 @@ using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate;
 using FreelancerProfile.Domain.Repositories;
 using WriteModel;
 
-namespace FreelancerCommands.Lambda.Handlers
+namespace FreelancerCommands.Lambda.Commands
 {
-    public class CreateFreelancer
+    public class CreateFreelancerCommandHandler
     {
         private readonly IFreelancerRepository _repository;
 
-        public CreateFreelancer()
+        public CreateFreelancerCommandHandler()
         {
             _repository = new FreelancerRepository();
         }

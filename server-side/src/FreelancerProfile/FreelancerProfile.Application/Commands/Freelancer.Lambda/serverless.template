@@ -4,11 +4,12 @@
   "Description": "Starting template for an AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
   "Parameters": {},
   "Resources": {
+
     "CreateFreelancer": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "FunctionName": "CreateFreelancer",
-        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Handlers.CreateFreelancer::FunctionHandler",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.CreateFreelancerCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
         "Description": "Default function",
@@ -21,9 +22,9 @@
           "AWSLambda_FullAccess"
         ],
         "Layers": [
-          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfilePersistanceWriteModel:2",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
           "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
-          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:1"
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
         ]
       }
     },
@@ -68,6 +69,73 @@
           "Fn::GetAtt": [
             "FreelancerRegisteredRule",
             "Arn"
+          ]
+        }
+      }
+    },
+
+    "SetupProfile": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "SetupProfile",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.SetupProfileCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "SetupProfileMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Fn::ImportValue": "FreelancerResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SetupProfile.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "SetupProfileLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SetupProfile"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
           ]
         }
       }

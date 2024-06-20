@@ -2,15 +2,10 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
-using Amazon.Lambda.Annotations;
-using Amazon.Lambda.Annotations.APIGateway;
 using System.IdentityModel.Tokens.Jwt;
 using Common.Layer.Security;
 using System.Net;
-using Amazon.SimpleNotificationService.Model;
 using Amazon.EventBridge;
-using Amazon.Auth.AccessControlPolicy;
-using Amazon.EventBridge.Model;
 using System.Text.Json;
 using EventBus;
 

@@ -144,7 +144,9 @@
         ],
         "Environment": {
           "Variables": {
-            "EVENT_BUS": { "Fn::ImportValue": "FPEventBusArn" },
+            "EVENT_BUS": {
+              "Fn::ImportValue": "FPEventBusArn"
+            },
             "SERVICE_NAME": "identity-service",
             "USER_POOL_ID": "eu-central-1_yP2OhxI3R"
           }

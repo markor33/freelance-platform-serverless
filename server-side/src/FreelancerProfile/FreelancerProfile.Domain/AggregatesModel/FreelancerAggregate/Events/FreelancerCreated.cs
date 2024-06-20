@@ -3,10 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
 {
-    [method: JsonConstructor]
-    public class FreelancerCreated(Guid aggregateId, Guid userId) : DomainEvent(aggregateId)
+
+    public class FreelancerCreated : DomainEvent
     {
-        public Guid UserId { get; private set; } = userId;
+        public Guid UserId { get; set; }
+
+        public FreelancerCreated() : base() { }
+
+        [JsonConstructor]
+        public FreelancerCreated(Guid aggregateId, Guid userId) : base(aggregateId)
+        {
+            UserId = userId;
+        }
 
     }
 }

@@ -38,12 +38,12 @@ If already installed check if new version is available.
 
 Execute unit tests
 ```
-    cd "Freelancer.Lambda/test/Freelancer.Lambda.Tests"
+    cd "CDCDispatcher.Lambda/test/CDCDispatcher.Lambda.Tests"
     dotnet test
 ```
 
 Deploy function to AWS Lambda
 ```
-    cd "Freelancer.Lambda/src/Freelancer.Lambda"
+    cd "CDCDispatcher.Lambda/src/CDCDispatcher.Lambda"
     dotnet lambda deploy-function
 ```

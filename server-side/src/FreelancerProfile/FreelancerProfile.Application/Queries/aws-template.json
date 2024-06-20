@@ -2,37 +2,29 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Common AWS Infrastructure for FreelancerProfile Command handlers",
     "Resources": {
-      "FPEventStore": {
+      "FPReadModelStore": {
         "Type": "AWS::DynamoDB::Table",
         "Properties": {
-          "TableName": "FPEventStore",
+          "TableName": "FPReadModelStore",
           "AttributeDefinitions": [
             {
-              "AttributeName": "EventId",
-              "AttributeType": "S"
-            },
-            {
-              "AttributeName": "AggregateId",
+              "AttributeName": "Id",
               "AttributeType": "S"
             }
           ],
           "KeySchema": [
-            { "AttributeName": "AggregateId", "KeyType": "HASH" },
-            { "AttributeName": "EventId", "KeyType": "RANGE" }
+            { "AttributeName": "Id", "KeyType": "HASH" }
           ],
           "ProvisionedThroughput": {
             "ReadCapacityUnits": 5,
             "WriteCapacityUnits": 5
-          },
-          "StreamSpecification": {
-            "StreamViewType": "NEW_IMAGE"
           }
         }
       },
-      "FPLambdaCommandRole": {
+      "FPLambdaQueryRole": {
         "Type": "AWS::IAM::Role",
         "Properties": {
-          "RoleName": "FPLambdaCommandRole",
+          "RoleName": "FPLambdaQueryRole",
           "AssumeRolePolicyDocument": {
             "Version": "2012-10-17",
             "Statement": [
@@ -57,17 +49,14 @@
                   {
                     "Effect": "Allow",
                     "Action": [
-                      "dynamodb:PutItem",
-                      "dynamodb:UpdateItem",
                       "dynamodb:GetItem",
                       "dynamodb:Query",
                       "dynamodb:Scan",
-                      "dynamodb:DescribeTable",
-                      "dynamodb:BatchWriteItem"
+                      "dynamodb:DescribeTable"
                     ],
                     "Resource": {
                       "Fn::GetAtt": [
-                        "FPEventStore",
+                        "FPReadModelStore",
                         "Arn"
                       ]
                     }
@@ -116,41 +105,29 @@
       }
     },
     "Outputs": {
-        "FPLambdaCommandRoleArn": {
-            "Description": "ARN of the IAM role for Lambda FreelancerProfile Commands execution",
-            "Value": {
-                "Fn::GetAtt": [
-                    "FPLambdaCommandRole",
-                    "Arn"
-                ]
-            },
-            "Export": {
-              "Name": "FPLambdaCommandRoleArn"
-            }
-        },
-        "FPEventStoreArn": {
-          "Description": "ARN of the FP DynamoDB Event Store (Write Model)",
+        "FPLambdaQueryRoleArn": {
+          "Description": "ARN of the IAM role for Lambda FreelancerProfile Query execution",
           "Value": {
               "Fn::GetAtt": [
-                  "FPEventStore",
+                  "FPLambdaQueryRole",
                   "Arn"
               ]
           },
           "Export": {
-            "Name": "FPEventStoreArn"
+            "Name": "FPLambdaQueryRoleArn"
           }
         },
-        "FPEventStoreStreamArn": {
-          "Description": "ARN of the FP DynamoDB Event Store Stream",
+        "FPReadModelStoreArn": {
+          "Description": "ARN of the FP DynamoDB Read Model Store",
           "Value": {
               "Fn::GetAtt": [
-                  "FPEventStore",
-                  "StreamArn"
+                  "FPReadModelStore",
+                  "Arn"
               ]
           },
           "Export": {
-              "Name": "FPEventStoreStreamArn"
+            "Name": "FPReadModelStoreArn"
           }
-      }
+        }
     }
 }

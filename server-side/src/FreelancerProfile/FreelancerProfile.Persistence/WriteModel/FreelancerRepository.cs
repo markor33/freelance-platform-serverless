@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.DataModel;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate;
 using FreelancerProfile.Domain.Repositories;
 using FreelancerProfile.Domain.SeedWork;
+using System.Reflection;
 using System.Text.Json;
 
 namespace WriteModel;
@@ -25,9 +26,11 @@ public class FreelancerRepository : IFreelancerRepository
 
         var freelancer = new Freelancer();
 
+        var assemblyWithEvents = Assembly.GetAssembly(typeof(Freelancer));
+
         foreach (var domainEventLog in domainEventLogs)
         {
-            var eventType = Type.GetType(domainEventLog.EventType);
+            var eventType = assemblyWithEvents.GetType($"FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events.{domainEventLog.EventType}");
             var domainEvent = (DomainEvent)JsonSerializer.Deserialize(domainEventLog.EventData, eventType);
             freelancer.Apply(domainEvent);
         }

@@ -24,7 +24,7 @@ namespace WriteModel
         {
             EventId = Guid.NewGuid().ToString();
             AggregateId = @event.AggregateId.ToString();
-            EventType = @event.GetType().AssemblyQualifiedName;
+            EventType = @event.GetType().Name;
             EventData = JsonSerializer.Serialize(@event, @event.GetType());
             Created = DateTime.UtcNow;
         }

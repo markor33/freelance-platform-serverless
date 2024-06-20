@@ -8,7 +8,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
 {
     public class Freelancer : EventSourcedAggregate
     {
-        public Guid UserId { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set;}
         public Contact Contact { get; private set; }
@@ -35,8 +34,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         {
             var freelancer = new Freelancer()
             {
-                Id = Guid.NewGuid(),
-                UserId = userId
+                Id = userId
             };
 
             var @event = new FreelancerCreated(freelancer.Id, userId);
@@ -58,6 +56,9 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         }
 
         public void SetupProfile(
+            string firstName,
+            string lastName,
+            Contact contact,
             bool isProfilePublic,
             ProfileSummary profileSummary,
             HourlyRate hourlyRate,
@@ -66,7 +67,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
             Profession profession,
             LanguageKnowledge languageKnowledge)
         {
-            var @event = new ProfileSetupCompleted(Id, isProfilePublic, profileSummary, hourlyRate, 
+            var @event = new ProfileSetupCompleted(Id, firstName, lastName, contact, isProfilePublic, profileSummary, hourlyRate, 
                 availability, experienceLevel, profession, languageKnowledge);
             Causes(@event);
 
@@ -173,7 +174,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         private void When(FreelancerCreated @event)
         {
             Id = @event.AggregateId;
-            UserId = @event.UserId;
         }
 
         private void When(ProfileSetupCompleted @event)

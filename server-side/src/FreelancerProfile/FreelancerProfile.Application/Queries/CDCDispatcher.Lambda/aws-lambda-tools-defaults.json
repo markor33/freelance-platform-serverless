@@ -13,8 +13,8 @@
     "function-runtime"      : "dotnet8",
     "function-memory-size"  : 512,
     "function-timeout"      : 30,
-    "function-handler"      : "Test::Test.Function::FunctionHandler",
+    "function-handler"      : "CDCDispatcher.Lambda::CDCDispatcher.Lambda.Function::FunctionHandler",
     "s3-bucket"             : "freelancer-profile-service1",
     "template"              : "serverless.template",
-    "stack-name"            : "freelancer-profile-service-commands"
+    "stack-name"            : "fps-events-dispatcher"
 }
