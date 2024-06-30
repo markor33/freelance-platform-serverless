@@ -179,6 +179,73 @@
             "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
         ]
       }
+    },
+
+    "ProfileSummaryUpdatedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ProfileSummaryUpdatedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "ProfileSummaryUpdated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ProfileSummaryUpdatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "UpdateProfileSummaryTarget"
+          }
+        ]
+      }
+    },
+    "PermissionUpdateProfileSummary": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProfileSummaryUpdatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ProfileSummaryUpdatedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ProfileSummaryUpdatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "ProfileSummaryUpdatedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProfileSummaryUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
     }
   }
 }

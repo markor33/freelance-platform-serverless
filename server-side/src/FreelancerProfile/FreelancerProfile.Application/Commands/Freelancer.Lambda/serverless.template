@@ -106,16 +106,22 @@
         },
         "HttpMethod": "PUT",
         "ResourceId": {
-          "Fn::ImportValue": "FreelancerResource"
+          "Fn::ImportValue": "FreelancerByIdResource"
         },
         "RestApiId": {
           "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
         },
         "Integration": {
           "Type": "AWS_PROXY",
           "IntegrationHttpMethod": "POST",
           "Uri": {
             "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SetupProfile.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
           }
         }
       }
@@ -130,7 +136,92 @@
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Sub": [
-            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer",
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "UpdateProfileSummary": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "UpdateProfileSummary",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.UpdateProfileSummaryCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdProfileSummaryResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "profile-summary",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "UpdateProfileSummaryMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdProfileSummaryResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateProfileSummary.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "UpdateProfileSummaryLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdateProfileSummary"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/profile-summary",
             {
               "ApiId": {
                 "Fn::ImportValue": "FreelancerRestApiId"

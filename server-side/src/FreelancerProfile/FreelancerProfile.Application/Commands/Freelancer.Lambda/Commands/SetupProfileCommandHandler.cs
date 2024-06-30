@@ -35,6 +35,16 @@ public class SetupProfileCommandHandler
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
         var sub = jwtToken.Subject;
 
+        var id = request.PathParameters["id"];
+        if (id != sub)
+        {
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = 401
+            };
+        }
+
+
         var command = JsonSerializer.Deserialize<SetupProfileCommand>(request.Body);
         command.FreelancerId = Guid.Parse(sub);
 
