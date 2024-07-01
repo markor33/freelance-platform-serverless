@@ -26,5 +26,12 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
             Description = description;
             Skills = skills;
         }
+
+        public bool TryGetSkills(List<Guid> skillIds, out List<Skill> skills)
+        {
+            skills = Skills.Where(s => skillIds.Contains(s.Id)).ToList();
+
+            return skillIds.Count == skills.Count;
+        }
     }
 }

@@ -246,6 +246,73 @@
             "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
         ]
       }
+    },
+
+    "SkillsUpdatedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "SkillsUpdatedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "SkillsUpdated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "SkillsUpdatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "UpdateSkillsTarget"
+          }
+        ]
+      }
+    },
+    "PermissionSkillUpdate": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SkillsUpdatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "SkillsUpdatedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "SkillsUpdatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "SkillsUpdatedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.SkillsUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
     }
   }
 }
