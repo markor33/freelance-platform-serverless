@@ -54,6 +54,18 @@ public class CertificationViewModel
     public string Provider { get; set; }
     public DateRange Attended { get; set; }
     public string Description { get; set; }
+
+    public static CertificationViewModel FromCertification(Certification certification)
+    {
+        return new CertificationViewModel()
+        {
+            Id = certification.Id,
+            Name = certification.Name,
+            Provider = certification.Provider,
+            Attended = certification.Attended,
+            Description = certification.Description
+        };
+    }
 }
 
 public class EmploymentViewModel

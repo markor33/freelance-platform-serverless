@@ -782,6 +782,207 @@
             "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
         ]
       }
+    },
+
+    "CertificationAddedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "CertificationAddedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "CertificationAdded"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CertificationAddedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "CertificationAddedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionCertificationAdded": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CertificationAddedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "CertificationAddedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "CertificationAddedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-CertificationAddedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationAddedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "CertificationUpdateRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "CertificationUpdateRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "CertificationUpdated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CertificationUpdatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "CertificationUpdatedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionCertificationUpdated": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CertificationUpdatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "CertificationUpdateRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "CertificationUpdatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-CertificationUpdatedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "CertificationDeletedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "CertificationDeleteRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "CertificationDeleted"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CertificationDeletedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "CertificationDeletedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionCertificationDeleted": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CertificationDeletedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "CertificationDeletedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "CertificationDeletedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-CertificationDeletedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationDeletedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
     }
   }
 }
