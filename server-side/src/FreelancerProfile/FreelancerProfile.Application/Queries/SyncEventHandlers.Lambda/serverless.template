@@ -380,6 +380,207 @@
             "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
         ]
       }
+    },
+
+    "EducationAddedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "EducationAddedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "EducationAdded"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "EducationAddedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "EducationAddedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionEducationAdded": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "EducationAddedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EducationAddedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "EducationAddedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-EducationAddedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationAddedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "EducationUpdateRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "EducationUpdateRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "EducationUpdated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "EducationUpdatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "EducationUpdatedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionEducationUpdated": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "EducationUpdatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EducationUpdateRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "EducationUpdatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-EducationUpdatedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "EducationDeletedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "EducationDeleteRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "freelancer-service"
+          ],
+          "detail-type": [
+            "EducationDeleted"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "EducationDeletedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "EducationDeletedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionEducationDeleted": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "EducationDeletedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EducationDeletedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "EducationDeletedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-sync-EducationDeletedHandler",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationDeletedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "FPLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:2",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
     }
   }
 }

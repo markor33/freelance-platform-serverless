@@ -1,0 +1,101 @@
+﻿using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using FluentResults;
+using FluentValidation;
+using FreelancerProfile.Domain.Repositories;
+using System.IdentityModel.Tokens.Jwt;
+using WriteModel;
+
+namespace EducationCommands.Lambda.Commands;
+
+public class DeleteEducationCommandHandler
+{
+    private readonly IFreelancerRepository _freelancerRepository;
+    private readonly IValidator<DeleteEducationCommand> _validator;
+    private ILambdaContext _context;
+
+    public DeleteEducationCommandHandler()
+    {
+        _freelancerRepository = new FreelancerRepository();
+        _validator = new DeleteEducationCommandValidator();
+    }
+
+    public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        _context = context;
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
+        var sub = jwtToken.Subject;
+
+        var id = request.PathParameters["id"];
+        var educationId = request.PathParameters["educationId"];
+        if (id != sub || educationId is null)
+        {
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = 401
+            };
+        }
+
+        var command = new DeleteEducationCommand(Guid.Parse(id), Guid.Parse(educationId));
+
+        var validationResult = _validator.Validate(command);
+        if (!validationResult.IsValid)
+        {
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = 400,
+                Body = $"Validation failed - {validationResult.Errors}"
+            };
+        }
+
+        var result = await CommandHandler(command);
+        var statusCode = result.IsSuccess ? 201 : 400;
+
+        return new APIGatewayProxyResponse()
+        {
+            StatusCode = statusCode
+        };
+    }
+
+    public async Task<Result> CommandHandler(DeleteEducationCommand request)
+    {
+        try
+        {
+            var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+
+            freelancer.DeleteEducation(request.EducationId);
+
+            await _freelancerRepository.SaveAsync(freelancer);
+
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            _context.Logger.LogError(ex.ToString());
+            return Result.Fail("Delete education action failed");
+        }
+    }
+
+}
+
+public class DeleteEducationCommand
+{
+    public Guid FreelancerId { get; set; }
+    public Guid EducationId { get; set; }
+
+    public DeleteEducationCommand(Guid freelancerId, Guid educationId)
+    {
+        FreelancerId = freelancerId;
+        EducationId = educationId;
+    }
+}
+
+public class DeleteEducationCommandValidator : AbstractValidator<DeleteEducationCommand>
+{
+    public DeleteEducationCommandValidator()
+    {
+        RuleFor(x => x.FreelancerId).NotEmpty();
+
+        RuleFor(x => x.EducationId).NotEmpty();
+    }
+}

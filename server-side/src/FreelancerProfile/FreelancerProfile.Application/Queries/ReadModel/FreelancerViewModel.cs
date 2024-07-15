@@ -34,6 +34,17 @@ public class EducationViewModel
     public string SchoolName { get; set; }
     public string Degree { get; set; }
     public DateRange Attended { get; set; }
+
+    public static EducationViewModel FromEducation(Education education)
+    {
+        return new EducationViewModel()
+        {
+            Id = education.Id,
+            SchoolName = education.SchoolName,
+            Degree = education.Degree,
+            Attended = education.Attended,
+        };
+    }
 }
 
 public class CertificationViewModel
