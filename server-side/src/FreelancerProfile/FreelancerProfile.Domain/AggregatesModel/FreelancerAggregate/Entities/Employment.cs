@@ -25,6 +25,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
 
         public Employment(string company, string title, DateRange period, string description)
         {
+            Id = Guid.NewGuid();
             Company = company;
             Title = title;
             Period = period;

@@ -64,5 +64,17 @@ public class EmploymentViewModel
     public DateRange Period { get; set; }
     public string Description { get; set; }
 
+    public static EmploymentViewModel FromEmployment(Employment employment)
+    {
+        return new EmploymentViewModel()
+        {
+            Id = employment.Id,
+            Company = employment.Company,
+            Title = employment.Title,
+            Period = employment.Period,
+            Description = employment.Description,
+        };
+    }
+
 }
 
