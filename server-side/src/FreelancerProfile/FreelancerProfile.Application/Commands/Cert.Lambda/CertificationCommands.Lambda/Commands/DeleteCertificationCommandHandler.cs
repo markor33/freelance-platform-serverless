@@ -2,6 +2,7 @@
 using Amazon.Lambda.Core;
 using FluentResults;
 using FluentValidation;
+using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using WriteModel;
@@ -30,6 +31,8 @@ public class DeleteCertificationCommandHandler
         var certificationId = request.PathParameters["certificationId"];
         if (id != sub || certificationId is null)
         {
+            context.Logger.LogError("Certification delete failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -41,6 +44,8 @@ public class DeleteCertificationCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -62,16 +67,24 @@ public class DeleteCertificationCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Certification delete failed");
+            }
 
             freelancer.DeleteCertification(request.CertificationId);
-
             await _freelancerRepository.SaveAsync(freelancer);
+
+            _context.Logger.LogInformation($"Certification successfully deleted - Id:{request.CertificationId}");
 
             return Result.Ok();
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Certification delete failed with exception - {ex}");
+
             return Result.Fail("Delete employment action failed");
         }
     }

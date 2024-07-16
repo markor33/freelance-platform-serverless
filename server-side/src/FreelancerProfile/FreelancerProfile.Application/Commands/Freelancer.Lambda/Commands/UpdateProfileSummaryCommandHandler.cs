@@ -31,6 +31,8 @@ public class UpdateProfileSummaryCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Update profile summary failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -43,6 +45,8 @@ public class UpdateProfileSummaryCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -65,16 +69,24 @@ public class UpdateProfileSummaryCommandHandler
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
             if (freelancer is null)
-                return Result.Fail("Freelancer does not exist");
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Profile summary update failed");
+            }
 
             freelancer.UpdateProfileSummary(request.ProfileSummary);
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Profile summary update successfull");
+
             return Result.Ok();
         }
-        catch
+        catch (Exception ex)
         {
+            _context.Logger.LogError($"Exception - {ex}");
+
             return Result.Fail("Freelancer profile setup failed");
         }
     }

@@ -31,6 +31,8 @@ public class UpdateEmploymentCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Employment update failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -43,6 +45,8 @@ public class UpdateEmploymentCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -64,17 +68,26 @@ public class UpdateEmploymentCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Employment update failed");
+            }
 
             freelancer.UpdateEmployment(request.EmploymentId, request.Company, request.Title,
                 new DateRange(request.Start, request.End), request.Description);
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Employment successfully updated - Id:{request.EmploymentId}");
+
             return Result.Ok();
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Employment update failed with exception - {ex}");
+
             return Result.Fail("Edit employment action failed");
         }
     }

@@ -30,6 +30,8 @@ public class DeleteEducationCommandHandler
         var educationId = request.PathParameters["educationId"];
         if (id != sub || educationId is null)
         {
+            context.Logger.LogError("Education delete failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -41,6 +43,8 @@ public class DeleteEducationCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -62,16 +66,24 @@ public class DeleteEducationCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Education delete failed");
+            }
 
             freelancer.DeleteEducation(request.EducationId);
-
             await _freelancerRepository.SaveAsync(freelancer);
+
+            _context.Logger.LogInformation($"Education successfully deleted - Id:{request.EducationId}");
 
             return Result.Ok();
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Education delete failed with exception - {ex}");
+
             return Result.Fail("Delete education action failed");
         }
     }

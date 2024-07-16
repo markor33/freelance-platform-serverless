@@ -31,6 +31,8 @@ public class AddSkillCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Skills assigning failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -56,26 +58,42 @@ public class AddSkillCommandHandler
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
             if (freelancer is null)
-                return Result.Fail("Freelancer does not exist");
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Education update failed");
+            }
 
             if (freelancer.ProfessionId is null)
+            {
+                _context.Logger.LogError($"Freelancar({request.FreelancerId}) does not have assigned profession");
+
                 return Result.Fail("Freelancer does not have assigned profession");
+            }
 
             var profession = await _professionRepository.GetByIdAsync((Guid)freelancer.ProfessionId);
 
             if (!profession.TryGetSkills(request.Skills, out List<Skill> skills))
             {
+                _context.Logger.LogError("Some skills are not valid");
+
                 return Result.Fail("Some skills are not valid");
             }
 
             freelancer.UpdateSkills(skills);
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation("Skills assigning failed successful");
+
             return Result.Ok();
         }
-        catch
+        catch (Exception ex)
         {
-            return Result.Fail("Skills assigning failed");
+            {
+                _context.Logger.LogError($"Exception: {ex}");
+
+                return Result.Fail("Skills assigning failed");
+            }
         }
     }
 }

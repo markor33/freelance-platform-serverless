@@ -35,6 +35,8 @@ public class SetProfilePictureCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Profile picture setup failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -47,6 +49,8 @@ public class SetProfilePictureCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -69,7 +73,11 @@ public class SetProfilePictureCommandHandler
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
             if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
                 return Result.Fail("Freelancer does not exist");
+            }
 
             var pictureUrl = await UploadPictureToS3(freelancer.Id, request.PictureBase64);
             if (pictureUrl is null)
@@ -79,11 +87,14 @@ public class SetProfilePictureCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation("Profile picture setup successful");
+
             return Result.Ok();
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Exception - {ex}");
+
             return Result.Fail("Setting profile picture failed");
         }
     }

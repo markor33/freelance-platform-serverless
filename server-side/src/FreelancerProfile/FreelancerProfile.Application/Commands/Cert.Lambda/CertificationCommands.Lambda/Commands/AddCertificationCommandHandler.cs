@@ -33,6 +33,8 @@ public class AddCertificationCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Certification creation failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -45,6 +47,8 @@ public class AddCertificationCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -67,6 +71,12 @@ public class AddCertificationCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Certification creation failed");
+            }
 
             var attended = new DateRange(request.Start, request.End);
             var certification = new Certification(request.Name, request.Provider, attended, request.Description);
@@ -74,11 +84,14 @@ public class AddCertificationCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Certification successfully created - {certification}");
+
             return Result.Ok(certification);
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Certification creation failed with exception - {ex}");
+
             return Result.Fail("Certification creation failed");
         }
     }

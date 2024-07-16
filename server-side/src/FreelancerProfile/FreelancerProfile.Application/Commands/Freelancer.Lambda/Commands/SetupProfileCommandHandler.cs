@@ -38,6 +38,8 @@ public class SetupProfileCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Profile setup failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -51,6 +53,8 @@ public class SetupProfileCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -72,9 +76,12 @@ public class SetupProfileCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
 
-            _context.Logger.LogInformation(request.FreelancerId.ToString());
-            _context.Logger.LogInformation(freelancer.Id.ToString());
+                return Result.Fail("Profile setup failed");
+            }
 
             var profession = await _professionRepository.GetByIdAsync(request.ProfessionId);
 
@@ -88,10 +95,14 @@ public class SetupProfileCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Profile setup successfull - {freelancer}");
+
             return Result.Ok();
         }
-        catch
+        catch (Exception ex)
         {
+            _context.Logger.LogError($"Exception - {ex}");
+
             return Result.Fail("Freelancer profile setup failed");
         }
     }

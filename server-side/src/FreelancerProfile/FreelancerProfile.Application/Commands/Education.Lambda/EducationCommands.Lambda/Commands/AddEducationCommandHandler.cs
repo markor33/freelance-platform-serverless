@@ -33,6 +33,8 @@ public class AddEducationCommandHandler
         var id = request.PathParameters["id"];
         if (id != sub)
         {
+            context.Logger.LogError("Education creation failed - missing path param");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 401
@@ -45,6 +47,8 @@ public class AddEducationCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -67,6 +71,12 @@ public class AddEducationCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
+
+                return Result.Fail("Education creation failed");
+            }
 
             var attended = new DateRange(request.Start, request.End);
             var education = new Education(request.SchoolName, request.Degree, attended);
@@ -74,11 +84,14 @@ public class AddEducationCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Education successfully created - Id:{education}");
+
             return Result.Ok(education);
         }
         catch (Exception ex)
         {
-            _context.Logger.LogError(ex.ToString());
+            _context.Logger.LogError($"Education creation failed with exception - {ex}");
+
             return Result.Fail("Education creation failed");
         }
     }
