@@ -18,5 +18,6 @@
     <ProjectReference Include="..\..\..\..\..\Common\Common\Common.Layer.csproj" />
     <ProjectReference Include="..\..\..\..\FreelancerProfile.Domain\FreelancerProfile.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\FreelancerProfile.Persistence\WriteModel\EventStore.csproj" />
+    <ProjectReference Include="..\..\..\Queries\ReadModel\ReadModel.csproj" />
   </ItemGroup>
 </Project>

@@ -45,9 +45,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadModel", "src\Freelancer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadModelStore", "src\FreelancerProfile\FreelancerProfile.Persistence\ReadModelStore\ReadModelStore.csproj", "{1211D2E8-04B4-470D-85E1-D5F5F5C245D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeedRun", "src\Common\SeedRun\SeedRun.csproj", "{D5B9DAB1-D221-4D3C-A1AB-92D9F24A00C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeedRun", "src\Common\SeedRun\SeedRun.csproj", "{D5B9DAB1-D221-4D3C-A1AB-92D9F24A00C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreelancerQueries.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Queries\FreelancerQueries.Lambda\FreelancerQueries.Lambda.csproj", "{61908A6D-662F-45B6-9526-878730A86DCF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EducationCommands.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Commands\Education.Lambda\EducationCommands.Lambda\EducationCommands.Lambda.csproj", "{CAA41441-1A88-499E-943A-CC46C5D77FAC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmploymentCommands.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Commands\Employment.Lambda\EmploymentCommands.Lambda\EmploymentCommands.Lambda.csproj", "{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CertificationCommands.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Commands\Cert.Lambda\CertificationCommands.Lambda\CertificationCommands.Lambda.csproj", "{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +109,18 @@ Global
 		{61908A6D-662F-45B6-9526-878730A86DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61908A6D-662F-45B6-9526-878730A86DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61908A6D-662F-45B6-9526-878730A86DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA41441-1A88-499E-943A-CC46C5D77FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA41441-1A88-499E-943A-CC46C5D77FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA41441-1A88-499E-943A-CC46C5D77FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA41441-1A88-499E-943A-CC46C5D77FAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +148,9 @@ Global
 		{1211D2E8-04B4-470D-85E1-D5F5F5C245D2} = {3C82F7E9-F5FE-443C-BAD9-D7686B335AA1}
 		{D5B9DAB1-D221-4D3C-A1AB-92D9F24A00C1} = {C4AFDF62-A244-4574-94EB-47493C698838}
 		{61908A6D-662F-45B6-9526-878730A86DCF} = {488328B2-D206-49A5-9D21-F6C509FD6167}
+		{CAA41441-1A88-499E-943A-CC46C5D77FAC} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
+		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
+		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22C60BB7-5682-4EB5-9983-271E00C10231}

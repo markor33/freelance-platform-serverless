@@ -5,6 +5,7 @@ using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.ValueObjects;
 using FreelancerProfile.Domain.Repositories;
+using ReadModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using WriteModel;
@@ -56,11 +57,12 @@ public class AddEmploymentCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Body = JsonSerializer.Serialize(EmploymentViewModel.FromEmployment(result.Value))
         };
     }
 
-    public async Task<Result> CommandHandler(AddEmploymentCommand request)
+    public async Task<Result<Employment>> CommandHandler(AddEmploymentCommand request)
     {
         try
         {
@@ -72,7 +74,7 @@ public class AddEmploymentCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
-            return Result.Ok();
+            return Result.Ok(employment);
         }
         catch (Exception ex)
         {

@@ -14,7 +14,7 @@
     "function-memory-size"  : 512,
     "function-timeout"      : 30,
     "function-handler"      : "EmploymentCommands.Lambda::EmploymentCommands.Lambda.Function::FunctionHandler",
-    "s3-bucket"             : "fp-profile-pictures",
+    "s3-bucket"             : "freelancer-profile-service1",
     "template"              : "serverless.template",
     "stack-name"            : "fps-employments-commands"
 }
