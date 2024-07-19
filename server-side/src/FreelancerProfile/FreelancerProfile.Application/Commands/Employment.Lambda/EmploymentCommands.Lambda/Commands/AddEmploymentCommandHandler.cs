@@ -24,6 +24,13 @@ public class AddEmploymentCommandHandler
         _validator = new AddEmploymentCommandValidator();
     }
 
+    public AddEmploymentCommandHandler(IFreelancerRepository freelancerRepository, IValidator<AddEmploymentCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

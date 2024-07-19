@@ -20,6 +20,13 @@ public class DeleteEducationCommandHandler
         _validator = new DeleteEducationCommandValidator();
     }
 
+    public DeleteEducationCommandHandler(IFreelancerRepository freelancerRepository, IValidator<DeleteEducationCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

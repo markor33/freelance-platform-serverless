@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmploymentCommands.Lambda",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CertificationCommands.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Commands\Cert.Lambda\CertificationCommands.Lambda\CertificationCommands.Lambda.csproj", "{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreelancerProfile.IntegrationTests", "src\FreelancerProfile\FreelancerProfile.IntegrationTests\FreelancerProfile.IntegrationTests.csproj", "{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{CAA41441-1A88-499E-943A-CC46C5D77FAC} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
 		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
 		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
+		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9} = {C02880A3-4CFF-431E-ABC1-DAE86A1E7E3C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22C60BB7-5682-4EB5-9983-271E00C10231}

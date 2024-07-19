@@ -29,6 +29,20 @@ public class SetupProfileCommandHandler
         _validator = new SetupProfileCommandValidator();
     }
 
+    public SetupProfileCommandHandler(
+        IFreelancerRepository freelancerRepository, 
+        IProfessionRepository professionRepository, 
+        ILanguageRepository languageRepository, 
+        IValidator<SetupProfileCommand> validator, 
+        ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _professionRepository = professionRepository;
+        _languageRepository = languageRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

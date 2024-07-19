@@ -24,6 +24,13 @@ public class AddEducationCommandHandler
         _validator = new AddEducationCommandValidator();
     }
 
+    public AddEducationCommandHandler(IFreelancerRepository freelancerRepository, IValidator<AddEducationCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

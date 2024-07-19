@@ -24,6 +24,13 @@ public class AddCertificationCommandHandler
         _validator = new AddCertificationCommandValidator();
     }
 
+    public AddCertificationCommandHandler(IFreelancerRepository freelancerRepository, IValidator<AddCertificationCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

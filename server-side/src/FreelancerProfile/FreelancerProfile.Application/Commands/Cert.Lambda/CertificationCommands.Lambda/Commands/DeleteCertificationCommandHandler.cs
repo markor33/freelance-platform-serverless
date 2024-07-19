@@ -2,7 +2,6 @@
 using Amazon.Lambda.Core;
 using FluentResults;
 using FluentValidation;
-using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using WriteModel;
@@ -19,6 +18,13 @@ public class DeleteCertificationCommandHandler
     {
         _freelancerRepository = new FreelancerRepository();
         _validator = new DeleteCertificationCommandValidator();
+    }
+
+    public DeleteCertificationCommandHandler(IFreelancerRepository freelancerRepository, IValidator<DeleteCertificationCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
     }
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)

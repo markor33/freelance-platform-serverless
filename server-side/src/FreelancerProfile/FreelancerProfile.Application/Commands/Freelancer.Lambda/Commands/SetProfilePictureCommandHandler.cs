@@ -26,6 +26,14 @@ public class SetProfilePictureCommandHandler
         _amazonS3 = new AmazonS3Client();
     }
 
+    public SetProfilePictureCommandHandler(IFreelancerRepository freelancerRepository, IValidator<SetProfilePictureCommand> validator, IAmazonS3 amazonS3, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _amazonS3 = amazonS3;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

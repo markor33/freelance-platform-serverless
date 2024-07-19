@@ -22,6 +22,13 @@ public class UpdateEmploymentCommandHandler
         _validator = new UpdateEmploymentCommandValidator();
     }
 
+    public UpdateEmploymentCommandHandler(IFreelancerRepository freelancerRepository, IValidator<UpdateEmploymentCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;

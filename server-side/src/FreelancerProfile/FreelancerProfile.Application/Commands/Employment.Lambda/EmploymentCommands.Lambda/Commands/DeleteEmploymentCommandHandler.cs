@@ -20,6 +20,13 @@ public class DeleteEmploymentCommandHandler
         _validator = new DeleteEmploymentCommandValidator();
     }
 
+    public DeleteEmploymentCommandHandler(IFreelancerRepository freelancerRepository, IValidator<DeleteEmploymentCommand> validator, ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
