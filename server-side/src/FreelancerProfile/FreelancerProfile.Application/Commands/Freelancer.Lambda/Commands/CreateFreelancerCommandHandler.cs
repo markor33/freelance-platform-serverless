@@ -18,8 +18,17 @@ namespace FreelancerCommands.Lambda.Commands
 
         public async Task FunctionHandler(EventBusEvent<FreelancerRegisteredIntegrationEvent> @event, ILambdaContext context)
         {
-            var freelancer = Freelancer.Create(@event.Detail.UserId);
-            await _repository.SaveAsync(freelancer);
+            try
+            {
+                var freelancer = Freelancer.Create(@event.Detail.UserId);
+                await _repository.SaveAsync(freelancer);
+
+                context.Logger.LogInformation($"Freelancer created: {freelancer}");
+            }
+            catch (Exception ex)
+            {
+                context.Logger.LogError($"Exception: {ex}");
+            }
         }
 
     }

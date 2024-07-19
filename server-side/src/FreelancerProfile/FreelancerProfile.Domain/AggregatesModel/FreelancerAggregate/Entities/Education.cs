@@ -26,6 +26,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
 
         public Education(string schoolName, string degree, DateRange attended)
         {
+            Id = Guid.NewGuid();
             SchoolName = schoolName;
             Degree = degree;
             Attended = attended;

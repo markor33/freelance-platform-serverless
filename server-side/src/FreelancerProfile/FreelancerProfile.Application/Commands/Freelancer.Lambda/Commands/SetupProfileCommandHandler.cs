@@ -29,11 +29,37 @@ public class SetupProfileCommandHandler
         _validator = new SetupProfileCommandValidator();
     }
 
+    public SetupProfileCommandHandler(
+        IFreelancerRepository freelancerRepository, 
+        IProfessionRepository professionRepository, 
+        ILanguageRepository languageRepository, 
+        IValidator<SetupProfileCommand> validator, 
+        ILambdaContext context)
+    {
+        _freelancerRepository = freelancerRepository;
+        _professionRepository = professionRepository;
+        _languageRepository = languageRepository;
+        _validator = validator;
+        _context = context;
+    }
+
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
         var sub = jwtToken.Subject;
+
+        var id = request.PathParameters["id"];
+        if (id != sub)
+        {
+            context.Logger.LogError("Profile setup failed - missing path param");
+
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = 401
+            };
+        }
+
 
         var command = JsonSerializer.Deserialize<SetupProfileCommand>(request.Body);
         command.FreelancerId = Guid.Parse(sub);
@@ -41,6 +67,8 @@ public class SetupProfileCommandHandler
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+            context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 400,
@@ -62,9 +90,12 @@ public class SetupProfileCommandHandler
         try
         {
             var freelancer = await _freelancerRepository.GetByIdAsync(request.FreelancerId);
+            if (freelancer is null)
+            {
+                _context.Logger.LogError($"Freelander with {request.FreelancerId} does not exist");
 
-            _context.Logger.LogInformation(request.FreelancerId.ToString());
-            _context.Logger.LogInformation(freelancer.Id.ToString());
+                return Result.Fail("Profile setup failed");
+            }
 
             var profession = await _professionRepository.GetByIdAsync(request.ProfessionId);
 
@@ -78,10 +109,14 @@ public class SetupProfileCommandHandler
 
             await _freelancerRepository.SaveAsync(freelancer);
 
+            _context.Logger.LogInformation($"Profile setup successfull - {freelancer}");
+
             return Result.Ok();
         }
-        catch
+        catch (Exception ex)
         {
+            _context.Logger.LogError($"Exception - {ex}");
+
             return Result.Fail("Freelancer profile setup failed");
         }
     }

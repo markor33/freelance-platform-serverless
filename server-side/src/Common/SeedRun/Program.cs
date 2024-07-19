@@ -2,7 +2,7 @@
 
 try
 {
-    await LanguageSeed.SeedAsync();
+    await SkillSeed.SeedAsync();
     Console.WriteLine("Seeding completed successfully.");
 }
 catch (Exception ex)

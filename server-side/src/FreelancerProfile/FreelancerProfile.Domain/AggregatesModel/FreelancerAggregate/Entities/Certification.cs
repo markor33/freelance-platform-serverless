@@ -25,6 +25,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
 
         public Certification(string name, string provider, DateRange attended, string? description)
         {
+            Id = Guid.NewGuid();
             Name = name;
             Provider = provider;
             Attended = attended;

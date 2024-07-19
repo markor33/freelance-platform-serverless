@@ -34,6 +34,17 @@ public class EducationViewModel
     public string SchoolName { get; set; }
     public string Degree { get; set; }
     public DateRange Attended { get; set; }
+
+    public static EducationViewModel FromEducation(Education education)
+    {
+        return new EducationViewModel()
+        {
+            Id = education.Id,
+            SchoolName = education.SchoolName,
+            Degree = education.Degree,
+            Attended = education.Attended,
+        };
+    }
 }
 
 public class CertificationViewModel
@@ -43,6 +54,18 @@ public class CertificationViewModel
     public string Provider { get; set; }
     public DateRange Attended { get; set; }
     public string Description { get; set; }
+
+    public static CertificationViewModel FromCertification(Certification certification)
+    {
+        return new CertificationViewModel()
+        {
+            Id = certification.Id,
+            Name = certification.Name,
+            Provider = certification.Provider,
+            Attended = certification.Attended,
+            Description = certification.Description
+        };
+    }
 }
 
 public class EmploymentViewModel
@@ -52,6 +75,18 @@ public class EmploymentViewModel
     public string Title { get; set; }
     public DateRange Period { get; set; }
     public string Description { get; set; }
+
+    public static EmploymentViewModel FromEmployment(Employment employment)
+    {
+        return new EmploymentViewModel()
+        {
+            Id = employment.Id,
+            Company = employment.Company,
+            Title = employment.Title,
+            Period = employment.Period,
+            Description = employment.Description,
+        };
+    }
 
 }
 
