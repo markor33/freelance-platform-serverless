@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: IaC template for Identity Service
+Parameters: {}
+Resources:
+  ChooseRoleIAM:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ChooseRoleIAM
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+      - PolicyName: DefaultFunctionPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminListGroupsForUser
+            - cognito-idp:ListUsers
+            Resource: arn:aws:cognito-idp:eu-central-1:891376935045:userpool/eu-central-1_yP2OhxI3R
+  ChooseRole:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ChooseRole
+      Handler: ChooseRole.Lambda::ChooseRole.Lambda.Function::FunctionHandler
+      Runtime: dotnet8
+      CodeUri: ChooseRole
+      PackageType: Zip
+      Description: Role choosement
+      MemorySize: 256
+      Timeout: 30
+      Role:
+        Fn::GetAtt:
+        - ChooseRoleIAM
+        - Arn
+    Metadata:
+      SamResourceId: ChooseRole

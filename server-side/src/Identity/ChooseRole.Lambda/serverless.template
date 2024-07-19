@@ -1,0 +1,157 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "IaC template for Identity Service This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
+  "Parameters": {},
+  "Resources": {
+    "IdentityServiceResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::ImportValue": "FreelancerRestApiRootResourceId"
+        },
+        "PathPart": "identity-service",
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        }
+      }
+    },
+    "RoleResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "IdentityServiceResource"
+        },
+        "PathPart": "role",
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        }
+      }
+    },
+    "ChooseRoleMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "RoleResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChooseRole.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "ChooseRoleIAM": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "ChooseRoleIAM",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "DefaultFunctionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:AdminAddUserToGroup",
+                    "cognito-idp:AdminListGroupsForUser",
+                    "cognito-idp:ListUsers"
+                  ],
+                  "Resource": "arn:aws:cognito-idp:eu-central-1:891376935045:userpool/eu-central-1_yP2OhxI3R"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "events:PutEvents"
+                  ],
+                  "Resource": {
+                    "Fn::ImportValue": "FPEventBusArn"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "LambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ChooseRole"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/identity-service/role",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ChooseRole": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "ChooseRole",
+        "Handler": "ChooseRole.Lambda::ChooseRole.Lambda.Function::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [
+            "ChooseRoleIAM",
+            "Arn"
+          ]
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "EVENT_BUS": {
+              "Fn::ImportValue": "FPEventBusArn"
+            },
+            "SERVICE_NAME": "identity-service",
+            "USER_POOL_ID": "eu-central-1_yP2OhxI3R"
+          }
+        }
+      }
+    }
+  }
+}

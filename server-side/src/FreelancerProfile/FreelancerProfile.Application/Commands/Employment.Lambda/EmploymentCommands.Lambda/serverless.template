@@ -1,0 +1,254 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "AddEmployment": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-AddEmployment",
+        "Handler": "EmploymentCommands.Lambda::EmploymentCommands.Lambda.Commands.AddEmploymentCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdEmploymentResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "employment",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "AddEmploymentMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEmploymentResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEmployment.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "AddEmploymentLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AddEmployment"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/POST/freelancer-service/freelancer/{id}/employment",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "UpdateEmployment": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-UpdateEmployment",
+        "Handler": "EmploymentCommands.Lambda::EmploymentCommands.Lambda.Commands.UpdateEmploymentCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdEmploymentByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Ref": "FreelancerByIdEmploymentResource"
+            },
+            "PathPart": "{employmentId}",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "UpdateEmploymentMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEmploymentByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true,
+          "method.request.path.employmentId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateEmployment.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "UpdateEmploymentLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdateEmployment"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/employment/{employmentId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "DeleteEmployment": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-DeleteEmployment",
+        "Handler": "EmploymentCommands.Lambda::EmploymentCommands.Lambda.Commands.DeleteEmploymentCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "DeleteEmploymentMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "DELETE",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEmploymentByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true,
+          "method.request.path.employmentId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteEmployment.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id",
+            "integration.request.path.employmentId": "method.request.path.employmentId"
+          }
+        }
+      }
+    },
+    "DeleteEmploymentLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "DeleteEmployment"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/DELETE/freelancer-service/freelancer/{id}/employment/{employmentId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

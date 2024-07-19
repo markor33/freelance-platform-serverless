@@ -1,0 +1,129 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Parameters": {},
+    "Resources": {
+      "IdentityServiceResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Fn::ImportValue": "FreelancerRestApiRootResourceId"
+          },
+          "PathPart": "freelancer-service",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "FreelancerResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "IdentityServiceResource"
+          },
+          "PathPart": "freelancer",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "FreelancerByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "FreelancerResource"
+          },
+          "PathPart": "{id}",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "LanguageRepo": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "LanguageRepo",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "N"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      },
+      "ProfessionRepo": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "ProfessionRepo",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      }
+    },
+    "Outputs": {
+        "IdentityServiceResource": {
+            "Value": {
+              "Ref": "IdentityServiceResource" 
+            },
+            "Export": {
+              "Name": "IdentityServiceResource"
+            }
+        },
+        "FreelancerResource": {
+          "Value": {
+            "Ref": "FreelancerResource" 
+          },
+          "Export": {
+            "Name": "FreelancerResource"
+          }
+        },
+        "FreelancerByIdResource": {
+          "Value": {
+            "Ref": "FreelancerByIdResource" 
+          },
+          "Export": {
+            "Name": "FreelancerByIdResource"
+          }
+        },
+        "LanguageRepoArn": {
+          "Value": {
+            "Fn::GetAtt": [
+              "LanguageRepo",
+              "Arn"
+          ]
+          },
+          "Export": {
+            "Name": "LanguageRepoArn"
+          }
+        },
+        "ProfessionRepoArn": {
+          "Value": {
+            "Fn::GetAtt": [
+              "ProfessionRepo",
+              "Arn"
+          ] 
+          },
+          "Export": {
+            "Name": "ProfessionRepoArn"
+          }
+        }
+    }
+  }

@@ -1,0 +1,254 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "AddEducation": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-AddEducation",
+        "Handler": "EducationCommands.Lambda::EducationCommands.Lambda.Commands.AddEducationCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdEducationResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "education",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "AddEducationMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEducationResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEducation.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "AddEducationLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AddEducation"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/POST/freelancer-service/freelancer/{id}/education",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "UpdateEducation": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-UpdateEducation",
+        "Handler": "EducationCommands.Lambda::EducationCommands.Lambda.Commands.UpdateEducationCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdEducationByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Ref": "FreelancerByIdEducationResource"
+            },
+            "PathPart": "{educationId}",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "UpdateEducationMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEducationByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true,
+          "method.request.path.educationId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateEducation.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "UpdateEducationLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdateEducation"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/education/{educationId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "DeleteEducation": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-DeleteEducation",
+        "Handler": "EducationCommands.Lambda::EducationCommands.Lambda.Commands.DeleteEducationCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "DeleteEducationMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "DELETE",
+        "ResourceId": {
+          "Ref": "FreelancerByIdEducationByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true,
+          "method.request.path.educationId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteEducation.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id",
+            "integration.request.path.educationId": "method.request.path.educationId"
+          }
+        }
+      }
+    },
+    "DeleteEducationLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "DeleteEducation"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/DELETE/freelancer-service/freelancer/{id}/education/{educationId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

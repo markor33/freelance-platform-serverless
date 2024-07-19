@@ -1,0 +1,426 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Starting template for an AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
+  "Parameters": {},
+  "Resources": {
+
+    "CreateFreelancer": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "CreateFreelancer",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.CreateFreelancerCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerRegisteredRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "FreelancerRegisteredRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "identity-service"
+          ],
+          "detail-type": [
+            "FreelancerRegisteredIntegrationEvent"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CreateFreelancer",
+                "Arn"
+              ]
+            },
+            "Id": "FreelancerRegisteredTarget"
+          }
+        ]
+      }
+    },
+    "PermissionForEventBridgeToInvokeLambda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CreateFreelancer"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FreelancerRegisteredRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+
+    "SetupProfile": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "SetupProfile",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.SetupProfileCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "SetupProfileMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Fn::ImportValue": "FreelancerByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SetupProfile.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "SetupProfileLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SetupProfile"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "UpdateProfileSummary": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "UpdateProfileSummary",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.UpdateProfileSummaryCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdProfileSummaryResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "profile-summary",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "UpdateProfileSummaryMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdProfileSummaryResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateProfileSummary.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "UpdateProfileSummaryLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdateProfileSummary"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/profile-summary",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "AddSkill": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "AddSkill",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.AddSkillCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "FreelancerByIdSkillResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "skill",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "AddSkillMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdSkillResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddSkill.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "AddSkillLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AddSkill"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/skill",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "SetProfilePicture": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-commands-SetProfilePicture",
+        "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.SetProfilePictureCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [
+          "AWSLambda_FullAccess",
+          {
+            "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+              ],
+              "Resource": [
+              "arn:aws:s3:::fp-profile-pictures/",
+                "arn:aws:s3:::fp-profile-pictures/*"
+              ]
+            }
+          ]
+          }
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ],
+        "Environment": {
+            "Variables": {
+                "S3_BUCKET_NAME": "fp-profile-pictures"
+            }
+        }
+      }
+    },
+    "FreelancerByIdProfilePictureResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+            "ParentId": {
+                "Fn::ImportValue": "FreelancerByIdResource"
+            },
+            "PathPart": "profile-picture",
+            "RestApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+            }
+        }
+    },
+    "SetProfilePictureMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "FreelancerByIdProfilePictureResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SetProfilePicture.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "SetProfilePictureLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SetProfilePicture"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/freelancer-service/freelancer/{id}/profile-picture",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

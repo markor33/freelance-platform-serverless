@@ -1,0 +1,77 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "GetFreelancerById" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "fps-queries-GetFreelancerById",
+        "Handler": "FreelancerQueries.Lambda::FreelancerQueries.Lambda.Handlers.GetByIdQueryHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "FPLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:4"
+        ]
+      }
+    },
+    "GetFreelancerMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::ImportValue": "FreelancerByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetFreelancerById.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "GetFreelancerByIdLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetFreelancerById"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/freelancer-service/freelancer/{id}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

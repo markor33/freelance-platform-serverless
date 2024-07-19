@@ -1,0 +1,50 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "API Gateway",
+  "Resources": {
+    "FreelancerRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "Freelancer REST API Gatewayt"
+      }
+    },
+    "CognitoAuthorizer": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "Name": "FreelancerCognitoAuthorizer",
+        "RestApiId": { "Ref": "FreelancerRestApi" },
+        "Type": "COGNITO_USER_POOLS",
+        "ProviderARNs": [ "arn:aws:cognito-idp:eu-central-1:891376935045:userpool/eu-central-1_yP2OhxI3R" ],
+        "IdentitySource": "method.request.header.Authorization",
+        "AuthorizerResultTtlInSeconds": 300
+      }
+    }
+  },
+  "Outputs": {
+    "ApiGatewayRestApiId": {
+      "Value": {
+        "Ref": "FreelancerRestApi"
+      },
+      "Export": {
+        "Name": "FreelancerRestApiId"
+      }
+    },
+    "ApiGatewayRootResourceId": {
+      "Description": "Root Resource ID of the API Gateway",
+      "Value": {
+        "Fn::GetAtt": [ "FreelancerRestApi", "RootResourceId" ]
+      },
+      "Export": {
+        "Name": "FreelancerRestApiRootResourceId"
+      }
+    },
+    "CognitoAuthorizerId": {
+      "Value": {
+        "Ref": "CognitoAuthorizer"
+      },
+      "Export": {
+        "Name": "CognitoAuthorizerId"
+      }
+    }
+  }
+}
