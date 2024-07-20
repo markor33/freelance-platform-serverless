@@ -1,0 +1,254 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Template for ClientProfile Service",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "ClientProfile": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "ClientProfile",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          },
+          "StreamSpecification": {
+            "StreamViewType": "NEW_IMAGE"
+          }
+        }
+      },
+    "ClientServiceResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Fn::ImportValue": "FreelancerRestApiRootResourceId"
+          },
+          "PathPart": "client-service",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+    "ClientResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ClientServiceResource"
+          },
+          "PathPart": "client",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+    "ClientByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ClientResource"
+          },
+          "PathPart": "{id}",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+    "CPLambdaRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "CPLambdaRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          ],
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "ClientProfile",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+
+    "CreateClient": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "cps-CreateClient",
+        "Handler": "ClientProfile.Lambda::ClientProfile.Lambda.Handlers.CreateClientCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [ "CPLambdaRole", "Arn"]
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+    "ClientRegisteredRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ClientRegisteredRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "identity-service"
+          ],
+          "detail-type": [
+            "ClientRegisteredIntegrationEvent"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CreateClient",
+                "Arn"
+              ]
+            },
+            "Id": "ClientRegisteredTarget"
+          }
+        ]
+      }
+    },
+    "PermissionForEventBridgeToInvokeLambda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CreateClient"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ClientRegisteredRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+
+    "ClientSetupProfile": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "cps-SetupProfile",
+        "Handler": "ClientProfile.Lambda::ClientProfile.Lambda.Handlers.SetupProfileCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [ "CPLambdaRole", "Arn"]
+        },
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+    "ClientSetupProfileMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "ClientByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ClientSetupProfile.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "ClientSetupProfileLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ClientSetupProfile"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/client-service/client/{id}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
