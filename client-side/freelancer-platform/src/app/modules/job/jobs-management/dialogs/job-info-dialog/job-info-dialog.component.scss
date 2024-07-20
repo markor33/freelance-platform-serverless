@@ -1,0 +1,57 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.icon-text-align {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+.container {
+    margin: 2%;
+    border: solid 1px;
+    border-radius: 1%;
+    border-color: mat.get-color-from-palette($my-palette);
+}
+
+.title {
+    padding-bottom: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.description {
+    padding: 1%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+    white-space: pre-line;
+}
+
+.skills {
+    padding: 1%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.skill-content {
+    margin-top: 1%;
+    margin-left: 2%;
+}
+
+.payment {
+    padding: 1%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.questions {
+    padding: 1%;
+}
+
+.question {
+    margin-top: 1%;
+}

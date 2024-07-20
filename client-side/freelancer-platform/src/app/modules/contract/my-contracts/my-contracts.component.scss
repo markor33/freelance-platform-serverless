@@ -1,0 +1,34 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+h1 {
+    text-align: center;
+}
+
+a {
+    color: mat.get-color-from-palette($my-palette);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+table {
+    margin-top: 1%;
+    border-collapse: collapse;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+table th, td {
+    text-align: center;
+    border-right: 1px solid black; 
+}
+
+tr.mat-mdc-row:hover {
+    background-color: #E0E0E0;
+    cursor: pointer;
+}

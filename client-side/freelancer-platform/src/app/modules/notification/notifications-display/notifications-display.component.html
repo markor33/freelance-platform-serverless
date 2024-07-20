@@ -1,0 +1,12 @@
+<div class="container">
+    <div class="actions">
+        <h2>Notifications:</h2>
+        <button mat-raised-button color="warn" (click)="clear()">Clear</button>
+    </div>
+    <div [class.notification-checked]="notification.isChecked" class="notification" 
+        (click)="notificationClicked(notification)" *ngFor="let notification of notifications; let i = index; let last = last;">
+        <h3>{{notificationsContent[i].title}}</h3>
+        <p>{{notificationsContent[i].description}}</p>
+        <mat-divider *ngIf="!last"></mat-divider>
+    </div>
+</div>

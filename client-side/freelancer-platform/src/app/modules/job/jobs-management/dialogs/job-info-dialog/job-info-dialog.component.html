@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="title">
+        <h2>{{job.title}}</h2>
+        <div>
+            <span class="icon-text-align">
+                <mat-icon>construction</mat-icon>&nbsp;
+                <b>Profession:</b>&nbsp;<span>{{job.profession.name}}</span>
+            </span>
+        </div>
+    </div>
+    <div class="description">
+        <h3>Description:</h3>
+        {{job.description}}
+    </div>
+    <div class="skills">
+        <h3>Skills and Expertise:</h3>
+        <div>
+            <span class="icon-text-align">
+                <mat-icon>bolt</mat-icon>&nbsp;
+                <b>Experience level:</b>&nbsp;<span>{{enumConverter.experienceLevelToString(job.experienceLevel)}}</span>
+            </span>
+        </div>
+        <div class="skill-content">
+            <mat-chip-listbox>
+                <mat-chip *ngFor="let skill of job.skills">{{skill.name}}</mat-chip>
+            </mat-chip-listbox>
+        </div>
+    </div>
+    <div class="payment">
+        <h3>Payment:</h3>
+        <div>
+            <span class="icon-text-align">
+                <mat-icon>euro</mat-icon>&nbsp;
+                <span>{{job.payment.amount + ' ' + job.payment.currency + ', ' + enumConverter.paymentTypeToString(job.payment.type)}}</span>
+            </span>
+        </div>
+    </div>
+    <div class="questions">
+        <h3>Questions:</h3>
+        <div *ngFor="let question of job.questions; let i = index" class="question">
+            {{(i+1) + ') ' + question.text + '?'}}
+        </div>
+    </div>
+</div>

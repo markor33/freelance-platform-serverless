@@ -1,0 +1,165 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.icon-text-align {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    gap: 2%;
+}
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1%;
+    width: 20%;
+}
+
+.expansion-panel-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-container {
+    width: 80%;
+    border: solid 1px mat.get-color-from-palette($my-palette);
+    border-radius: 1%;
+}
+
+.search {
+    width: 80%;
+    height: 40px;
+    margin-top: 1%;
+    margin-left: 3%;
+    margin-bottom: 5%;
+    display: flex;
+    border: solid 1px lightgray;
+}
+
+.search input {
+    flex-grow: 1;
+    border: 0;
+    font-size: 17px;
+}
+
+.search input:focus {
+    border: 0;
+    outline: none;
+}
+
+.search-button {
+    width: 5%;
+    background-color: mat.get-color-from-palette($my-palette);;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+}
+
+.search-button mat-icon {
+    color: white;
+}
+
+.search-button mat-icon:hover {
+    cursor: pointer;
+}
+
+.job {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 3%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.job:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.title {
+    padding-left: 1%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+.title .spacer {
+    flex-grow: 1;
+}
+
+.title .date {
+    color: grey;
+}
+
+.job .description {
+    padding-left: 1%;
+    white-space: pre-line;
+}
+
+.job .apply-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2%;
+}
+
+.job .apply-button button {
+    font-size: large;
+}
+
+.payment-experience-level {
+    padding-left: 1%;
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+}
+
+mat-divider {
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+.proposals {
+    padding-left: 1%;
+    display: flex;
+    gap: 2%;
+}
+
+.client {
+    padding-left: 1%;
+    width: 100%;
+    display: flex;
+    gap: 1%;
+    align-content: center;
+    align-items: center;
+}
+
+.client mat-divider {
+    margin-left: 1%;
+}
+
+.rating {
+    width: 15%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+
+.rating span {
+    white-space: nowrap;
+}
+
+.rating div {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+}

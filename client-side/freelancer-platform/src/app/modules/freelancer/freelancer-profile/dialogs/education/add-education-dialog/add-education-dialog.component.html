@@ -1,0 +1,30 @@
+<div class="container">
+    <h2>Add education</h2>
+    <form (ngSubmit)="add()">
+        <mat-form-field>
+            <mat-label>School name</mat-label>
+            <input matInput type="text" required name="schoolName" [(ngModel)]="addEducationCommand.schoolName">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Degree</mat-label>
+            <input matInput type="text" required name="degree" [(ngModel)]="addEducationCommand.degree">
+        </mat-form-field>
+        <div class="attended">
+            <mat-form-field>
+                <mat-label>Start date</mat-label>
+                <input matInput [matDatepicker]="startDate" required name="startDate" [(ngModel)]="attended.start">
+                <mat-datepicker-toggle matIconSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>End date</mat-label>
+                <input matInput [matDatepicker]="endDate" required name="endDate" [(ngModel)]="attended.end">
+                <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="add-button">
+            <button mat-raised-button color="primary">Add</button>
+        </div>
+    </form>
+</div>

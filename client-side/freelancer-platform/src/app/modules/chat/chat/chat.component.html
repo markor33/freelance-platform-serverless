@@ -1,0 +1,48 @@
+<div class="container">
+    <div class="chat-list">
+        <div class="chat" (click)="openChat(chat)" *ngFor="let chat of chats">
+            <img class="profile-picture" src="https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg">
+            <div>
+                <span class="participant-name">{{getOppositeParticipant(chat).name}}</span>
+                <div class="status">
+                    <div [ngClass]="getOppositeParticipant(chat).isActive ? 'status-online ' : 'status-offline'"></div>
+                    <span *ngIf="getOppositeParticipant(chat).isActive">online</span>
+                    <span *ngIf="!getOppositeParticipant(chat).isActive">offline</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="active-chat">
+        <div class="job-info">
+            <span (click)="openJobDialog()">{{activeChat?.jobTitle}}</span>
+            <span class="spacer"></span>
+            <span *ngIf="activeChat !== null && activeChat.contractId === null" (click)="openProposalDialog()">Show proposal</span>
+        </div>
+        <div class="chat-messages">
+            <div class="message" *ngFor="let message of messages">
+                <img class="profile-picture" src="https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg">
+                <div>
+                    <div class="sender">
+                        <span class="sender-name"><b>{{getSender(message).name}}</b></span>
+                        <span class="spacer"></span>
+                        <span class="icon-text-align time">
+                            <mat-icon color="primary">timer</mat-icon>&nbsp;
+                            {{message.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' })}}
+                        </span>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <span class="message-text">
+                        {{message.text}}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="send-message" *ngIf="activeChat !== null">
+            <mat-icon>chat</mat-icon>
+            <input placeholder="Type your message" [(ngModel)]="messageText">
+            <button mat-icon-button (click)="sendMessage()">
+                <mat-icon>send</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+h2 {
+    cursor: pointer;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.navigations {
+    margin-left: 1%;
+}
+
+.navigations button {
+    font-size: large;
+}
+
+mat-toolbar {
+    height: 7%;
+}
+
+.main-container {
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 1%;
+    height: 90%;
+}
+
+.notifications-container {
+    position: absolute;
+    margin-left: 80.5%;
+    width: 19%;
+    height: 40%;
+    max-height: 40%;
+    overflow-y: scroll;
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    border-bottom-left-radius: 1%;
+    border-bottom-right-radius: 1%;
+    border-color: mat.get-color-from-palette($my-palette);
+}

@@ -1,0 +1,34 @@
+<div class="container">
+    <h2>Edit your certification</h2>
+    <form (ngSubmit)="edit()">
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput type="text" required name="schoolName" [(ngModel)]="editCertificationCommand.name">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Provider</mat-label>
+            <input matInput type="text" required name="schoolName" [(ngModel)]="editCertificationCommand.provider">
+        </mat-form-field>
+        <div class="attended">
+            <mat-form-field>
+                <mat-label>Start date</mat-label>
+                <input matInput [matDatepicker]="startDate" required name="startDate" [(ngModel)]="editCertificationCommand.start">
+                <mat-datepicker-toggle matIconSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>End date</mat-label>
+                <input matInput [matDatepicker]="endDate" required name="endDate" [(ngModel)]="editCertificationCommand.end">
+                <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput [rows]="10" name="description" [(ngModel)]="editCertificationCommand.description"></textarea>
+        </mat-form-field>
+        <div class="add-button">
+            <button mat-raised-button color="primary">Submit</button>
+        </div>
+    </form>
+</div>

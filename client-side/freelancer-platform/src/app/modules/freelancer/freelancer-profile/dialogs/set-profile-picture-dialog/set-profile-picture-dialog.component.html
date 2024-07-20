@@ -1,0 +1,10 @@
+<div class="container">
+    <h2>Profile picture</h2>
+    <form (ngSubmit)="submit()">
+        <input placeholder="Profile picture" type="file" required (change)="onFileSelected($event)">
+        <div class="add-button">
+            <button mat-raised-button color="primary">Submit</button>
+        </div>
+    </form>
+</div>
+

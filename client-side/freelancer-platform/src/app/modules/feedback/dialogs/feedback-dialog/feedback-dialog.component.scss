@@ -1,0 +1,72 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+h2 {
+    text-align: center;
+}
+
+a {
+    color: mat.get-color-from-palette($my-palette);
+}
+
+a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.container {
+    margin: 2%;
+    border: solid 1px;
+    border-radius: 1%;
+    min-height: 90%;
+    border-color: mat.get-color-from-palette($my-palette);
+}
+
+.title {
+    padding-bottom: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.client-feedback {
+    padding: 1%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+    white-space: pre-line;
+}
+
+.freelancer-feedback {
+    padding: 1%;
+    white-space: pre-line;
+}
+
+.rating {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.rating h3 {
+    margin-right: 1%;
+}
+
+.create-feedback {
+    padding: 1%;
+    border-top: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.submit-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.submit-button button {
+    font-size: large;
+}
