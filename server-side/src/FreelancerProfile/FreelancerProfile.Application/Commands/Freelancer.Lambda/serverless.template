@@ -4,7 +4,6 @@
   "Description": "Starting template for an AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
   "Parameters": {},
   "Resources": {
-
     "CreateFreelancer": {
       "Type": "AWS::Serverless::Function",
       "Properties": {

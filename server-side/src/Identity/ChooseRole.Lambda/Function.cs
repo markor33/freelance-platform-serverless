@@ -8,6 +8,7 @@ using System.Net;
 using Amazon.EventBridge;
 using System.Text.Json;
 using EventBus;
+using Amazon.EventBridge.Model;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -20,6 +21,11 @@ public record RequestBody
 }
 
 public record FreelancerRegisteredIntegrationEvent(Guid UserId)
+{
+    public Guid UserId { get; private set; } = UserId;
+}
+
+public record ClientRegisteredIntegrationEvent(Guid UserId)
 {
     public Guid UserId { get; private set; } = UserId;
 }
@@ -102,9 +108,16 @@ public class Function
 
     private async Task PublishIntegrationEvent(Role role, string sub)
     {
-        var @event = new FreelancerRegisteredIntegrationEvent(Guid.Parse(sub));
+        PutEventsResponse? response;
+        if (role == Role.Freelancer)
+        {
+            response = await _eventBridgeClient.PublishEvent(new FreelancerRegisteredIntegrationEvent(Guid.Parse(sub)));
+        }
+        else
+        {
+            response = await _eventBridgeClient.PublishEvent(new ClientRegisteredIntegrationEvent(Guid.Parse(sub)));
+        }
 
-        var response = await _eventBridgeClient.PublishEvent<FreelancerRegisteredIntegrationEvent>(@event);
 
         if (response.FailedEntryCount > 0)
         {
