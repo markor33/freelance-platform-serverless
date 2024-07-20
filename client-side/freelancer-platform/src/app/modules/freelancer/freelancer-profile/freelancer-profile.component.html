@@ -1,0 +1,185 @@
+<div class="container">
+    <div class="side-content">
+        <div class="general-info">
+            <img class="profile-picture" [src]="getProfilePictureUrl()" (click)="openSetProfilePictureDialog()">
+            <span class="name">{{freelancer.firstName + ' ' + freelancer.lastName.charAt(0)}}.</span>
+            <div>
+                <span class="icon-text-align">
+                    <mat-icon>location_on</mat-icon>&nbsp;
+                    {{freelancer.contact.address.city + ', ' + freelancer.contact.address.country}}
+                </span>
+                <span class="icon-text-align">
+                    <mat-icon>schedule</mat-icon>&nbsp;
+                    Currently 02:50 PM here
+                </span>
+                <span class="icon-text-align">
+                    <mat-icon>euro</mat-icon>&nbsp;
+                    {{freelancer.hourlyRate.amount + ' / hour ' + freelancer.hourlyRate.currency}}
+                </span>
+                <span class="icon-text-align">
+                    <mat-icon>loyalty</mat-icon>&nbsp;
+                    Joined {{freelancer.joined.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}}
+                </span>
+            </div>
+        </div>
+        <div class="about-me">
+            <div class="languages">
+                <span class="icon-text-align">
+                    <mat-icon>translate</mat-icon>&nbsp;
+                    <b>Languages:</b>
+                </span>
+                <div *ngFor="let languageKnowledge of freelancer.languageKnowledges">
+                    <span><b>{{languageKnowledge.language.name}}:</b></span>&nbsp;<span>{{enumConverter.languageProficiencyLevelToString(languageKnowledge.profiencyLevel)}}</span><br>
+                </div>
+            </div>
+            <span class="availability icon-text-align">
+                <mat-icon>calendar_month</mat-icon>&nbsp;
+                <span><b>Availability:</b></span>&nbsp;<span>{{enumConverter.availabilityToString(freelancer.availability)}}</span>
+            </span>
+        </div>
+        <div class="profession">
+            <div>
+                <span class="icon-text-align">
+                    <mat-icon>construction</mat-icon>&nbsp;
+                    <b>Profession:</b>&nbsp;<span>{{freelancer.profession.name}}</span>
+                </span>
+            </div>
+            <div>
+                <span class="icon-text-align">
+                    <mat-icon>bolt</mat-icon>&nbsp;
+                    <b>Experience level:</b>&nbsp;<span>{{enumConverter.experienceLevelToString(freelancer.experienceLevel)}}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="profile-summary"
+            (mouseenter)="profileSummaryHover = true"
+            (mouseleave)="profileSummaryHover = false">
+            <div class="content-actions">
+                <h2>{{freelancer.profileSummary.title}}</h2>
+                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && profileSummaryHover === true" 
+                    (click)="openEditProfileSummaryDialog(freelancer.profileSummary)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </div>
+            <div class="description">{{freelancer.profileSummary.description}}</div>
+        </div>
+        <div class="feedbacks" *ngIf="feedbacks.length !== 0">
+            <h2>Feedbacks:</h2>&nbsp;
+            <div class="feedback" *ngFor="let feedback of feedbacks; let last = last">
+                <h3><a (click)="openJobInfoDialog(feedback.jobId)">{{feedback.jobTitle}}</a></h3>
+                <div class="rating">
+                    <mat-icon *ngFor="let index of getRange(feedback.rating)" color="primary">grade</mat-icon>
+                </div>
+                <span>{{feedback.text}}</span>
+                <mat-divider *ngIf="!last"></mat-divider>
+            </div>
+        </div>
+        <div class="education"
+            (mouseenter)="educationHover = true"
+            (mouseleave)="educationHover = false">
+            <span class="title icon-text-align">
+                <h2>Education:</h2>&nbsp;
+                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && educationHover === true" (click)="openAddEducationDialog()">
+                    <mat-icon>add_circle</mat-icon>
+                </button>
+            </span>
+            <div class="education-content">
+                <div *ngFor="let education of freelancer.educations; let last = last">
+                    <div>
+                        <div class="content-actions">
+                            <h3>{{education.schoolName}}</h3>
+                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && educationHover === true" 
+                                (click)="openEditEducationDialog(education)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && educationHover === true" 
+                                (click)="deleteEducation(education.id)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                        <span>{{education.degree}}</span><br>
+                        <span>{{education.attended.start.getFullYear()}} - {{education.attended.end.getFullYear()}}</span>
+                    </div>
+                    <mat-divider *ngIf="!last"></mat-divider>
+                </div>
+            </div>
+        </div>
+        <div class="certification"
+                (mouseenter)="certificationHover = true"
+                (mouseleave)="certificationHover = false">
+            <span class="title icon-text-align">
+                <h2>Certification:</h2>&nbsp;
+                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && certificationHover === true" (click)="openAddCertificationDialog()">
+                    <mat-icon>add_circle</mat-icon>
+                </button>
+            </span>
+            <div class="certification-content">
+                <div *ngFor="let certification of freelancer.certifications; let last = last;">
+                    <div>
+                        <div class="content-actions">
+                            <h3>{{certification.name}}</h3>
+                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && certificationHover === true" 
+                                (click)="openEditCertificationDialog(certification)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && certificationHover === true" 
+                                (click)="deleteCertification(certification.id)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                        <span>{{certification.provider}}</span><br>
+                        <span>{{certification.attended.start.getFullYear()}} - {{certification.attended.end.getFullYear()}}</span>
+                    </div>
+                    <mat-divider *ngIf="!last"></mat-divider>
+                </div>
+            </div>
+        </div>
+        <div class="skill"
+            (mouseenter)="skillsHover = true"
+            (mouseleave)="skillsHover = false">
+            <span class="title icon-text-align">
+                <h2>Skills:</h2>&nbsp;
+                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && skillsHover === true" (click)="openAddSkillDialog()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </span>
+            <div class="skill-content">
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let skill of freelancer.skills">{{skill.name}}</mat-chip>
+                </mat-chip-listbox>
+            </div>
+        </div>
+        <div class="employment"
+            (mouseenter)="employmentHover = true"
+            (mouseleave)="employmentHover = false">
+            <span class="title icon-text-align">
+                <h2>Employment:</h2>&nbsp;
+                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && employmentHover === true" (click)="openAddEmploymentDialog()">
+                    <mat-icon>add_circle</mat-icon>
+                </button>
+            </span>
+            <div class="employment-content">
+                <div *ngFor="let employment of freelancer.employments; let last = last;">
+                    <div>
+                        <div class="content-actions">
+                            <h3>{{employment.title}}</h3>
+                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && employmentHover === true" 
+                                (click)="openEditEmploymentDialog(employment)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && employmentHover === true" 
+                                (click)="deleteEmployment(employment.id)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                        <span>{{employment.company}}</span><br>
+                        <span>{{employment.period.start.getFullYear()}} - {{employment.period.end.getFullYear()}}</span>
+                    </div>
+                    <mat-divider *ngIf="!last"></mat-divider>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

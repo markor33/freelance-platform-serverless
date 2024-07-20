@@ -1,0 +1,16 @@
+<div class="container">
+    <h2>Edit your profile summary</h2>
+    <form (ngSubmit)="edit()">
+        <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input matInput type="text" required [(ngModel)]="profileSummary.title" name="title">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput [rows]="10" required [(ngModel)]="profileSummary.description" name="description"></textarea>
+        </mat-form-field>
+        <div class="add-button">
+            <button mat-raised-button color="primary">Submit</button>
+        </div>
+    </form>
+</div>

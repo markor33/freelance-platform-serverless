@@ -1,0 +1,30 @@
+<mat-toolbar color="primary">
+    <h2 (click)="route()">F-Platform |</h2>
+    <div class="navigations">
+        <button mat-button routerLink="/job-management" *ngIf="userRole === 'CLIENT'">Jobs</button>
+        <button mat-button routerLink="/my-contracts" *ngIf="isUserLogged">My contracts</button>
+    </div>
+    <span class="spacer"></span>
+    <button mat-icon-button *ngIf="isUserLogged" routerLink="/chat" (click)="showNewChatMessageDot = false">
+        <mat-icon matBadge="&#8288;" matBadgeColor="warn" matBadgeSize="small" [matBadgeHidden]="!showNewChatMessageDot">chat</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="isUserLogged" (click)="openNotificationsDisplay()">
+        <mat-icon matBadge="&#8288;" matBadgeColor="warn" matBadgeSize="small" [matBadgeHidden]="!showNewNotificationDot">notifications</mat-icon>
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="isUserLogged">
+        <mat-icon>person</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="navigateToProfile()" *ngIf="userRole === 'FREELANCER'">My profile</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
+    <button mat-icon-button (click)="login()" *ngIf="!isUserLogged">
+        <mat-icon>login</mat-icon>
+    </button>
+</mat-toolbar>
+<div class="notifications-container" *ngIf="showNotifications">
+    <app-notifications-display></app-notifications-display>
+</div>
+<div class="main-container">
+    <router-outlet></router-outlet>
+</div>
