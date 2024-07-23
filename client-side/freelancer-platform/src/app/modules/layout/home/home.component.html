@@ -15,7 +15,7 @@
         <mat-icon>person</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="navigateToProfile()" *ngIf="userRole === 'FREELANCER'">My profile</button>
+        <button mat-menu-item (click)="navigateToProfile()" *ngIf="userRole === 'Freelancer'">My profile</button>
         <button mat-menu-item (click)="logout()">Logout</button>
       </mat-menu>
     <button mat-icon-button (click)="login()" *ngIf="!isUserLogged">

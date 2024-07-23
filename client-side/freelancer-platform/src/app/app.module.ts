@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from './modules/auth/auth.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { JwtInterceptor, JwtModule } from "@auth0/angular-jwt";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FreelancerModule } from './modules/freelancer/freelancer.module';
 import { SharedModule } from './modules/shared/shared.module';
@@ -18,6 +17,8 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 
 import { Amplify } from "aws-amplify"
 import { AuthService } from './modules/auth/services/auth.service';
+import {JwtModule} from "@auth0/angular-jwt";
+import {JwtInterceptor} from "./modules/auth/helpers/jwt.interceptor";
 Amplify.configure({
     Auth: {
       Cognito: {
@@ -26,7 +27,7 @@ Amplify.configure({
         loginWith: {
           oauth: {
             domain: 'freelance-platform.auth.eu-central-1.amazoncognito.com',
-            scopes: ['email', 'openid'],
+            scopes: ['email', 'openid', 'FRS/rw'],
             redirectSignIn: ['http://localhost:4200/auth-callback'],
             redirectSignOut: ['http://localhost:4200/'],
             responseType: 'code',

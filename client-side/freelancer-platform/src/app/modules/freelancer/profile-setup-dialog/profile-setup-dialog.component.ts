@@ -11,6 +11,8 @@ import { LanguageService } from '../../shared/services/language.service';
 import { ProfessionService } from '../../shared/services/profession.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ProfileSetupCommand } from '../models/commands/profile-setup-command.model';
+import {Role} from "../../shared/models/role.model";
+import {Contact} from "../../shared/models/contact.model";
 
 @Component({
   selector: 'app-profile-setup-dialog',
@@ -29,8 +31,22 @@ export class CompleteRegisterDialogComponent {
 
   languages: Language[] = [];
   professions: Profession[] = [];
+  contact: Contact = new Contact();
+  role: Role = Role.Freelancer;
 
   generalFormGroup = this.formBuilder.group({
+    firstName: new FormControl('', Validators.required),
+    lastName: new FormControl('', Validators.required),
+    contact: this.formBuilder.group({
+      phoneNumber: new FormControl('', Validators.required),
+      address: this.formBuilder.group({
+        country: new FormControl('', Validators.required),
+        city: new FormControl('', Validators.required),
+        street: new FormControl('', Validators.required),
+        number: new FormControl('', Validators.required),
+        zipCode: new FormControl('', Validators.required),
+      })
+    }),
     isProfilePublic: new FormControl(true, Validators.required),
     availability: new FormControl(0, Validators.required),
   });
@@ -71,7 +87,7 @@ export class CompleteRegisterDialogComponent {
   {
     this.languageService.get().subscribe((languages) => this.languages = languages);
     this.professionService.get().subscribe((professions) => this.professions = professions);
-    
+
     this.dialogRef.afterClosed().subscribe(() => {
       if (!this.isCompleted)
         CompleteRegisterDialogComponent.open(this.dialog);
@@ -93,6 +109,7 @@ export class CompleteRegisterDialogComponent {
 
   setupProfile(): void {
     var createCommand = this.parseToCommandModel();
+    console.log(createCommand)
     this.freelancerService.setupProfile(createCommand).subscribe({
       complete: () => {
         this.isCompleted = true;

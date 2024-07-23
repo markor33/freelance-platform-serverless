@@ -18,10 +18,27 @@ public class ProfessionRepository : IProfessionRepository
         _context = new DynamoDBContext(_client);
     }
 
+    public async Task<List<Profession>> Get()
+    {
+        var scanConditions = new List<ScanCondition>();
+        var professionViewModels = await _context.ScanAsync<ProfessionViewModel>(scanConditions).GetRemainingAsync();
+
+        var professions = professionViewModels.Select(x => x.ToProfession()).ToList();
+
+        return professions;
+    }
+
     public async Task<Profession> GetByIdAsync(Guid id)
     {
         var professionViewModel = await _context.LoadAsync<ProfessionViewModel>(id);
         
         return professionViewModel.ToProfession();
+    }
+
+    public async Task<List<Skill>> GetSkills(Guid id)
+    {
+        var professionViewModel = await _context.LoadAsync<ProfessionViewModel>(id);
+
+        return professionViewModel.ToProfession().Skills;
     }
 }

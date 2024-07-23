@@ -14,6 +14,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities
         [JsonConstructor]
         public LanguageKnowledge(Language language, LanguageProficiencyLevel profiencyLevel)
         {
+            Id = Guid.NewGuid();
             Language = language;
             ProfiencyLevel = profiencyLevel;
         }

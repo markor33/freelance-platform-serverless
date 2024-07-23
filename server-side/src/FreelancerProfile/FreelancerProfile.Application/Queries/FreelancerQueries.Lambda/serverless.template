@@ -31,6 +31,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "GET",
         "ResourceId": {
           "Fn::ImportValue": "FreelancerByIdResource"

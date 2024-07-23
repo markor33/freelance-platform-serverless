@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
@@ -14,6 +14,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
 import { SharedModule } from '../shared/shared.module';
 import { CallbackComponent } from './callback/callback.component';
+import { ChooseRoleDialogComponent } from './choose-role-dialog/choose-role-dialog.component';
 
 const routes: Routes = [
   { path: 'auth-callback', component: CallbackComponent }
@@ -21,7 +22,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    CallbackComponent
+    CallbackComponent,
+    ChooseRoleDialogComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +39,8 @@ const routes: Routes = [
     MatRadioModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    ReactiveFormsModule
   ]
 })
 export class AuthModule { }

@@ -1,5 +1,7 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Common.Layer.Headers;
+using Common.Layer.JsonOptions;
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.ValueObjects;
@@ -39,7 +41,7 @@ public class UpdateProfileSummaryCommandHandler
             };
         }
 
-        var profileSummary = JsonSerializer.Deserialize<ProfileSummary>(request.Body);
+        var profileSummary = JsonSerializer.Deserialize<ProfileSummary>(request.Body, JsonOptions.Options);
         var command = new UpdateProfileSummaryCommand(Guid.Parse(sub), profileSummary);
 
         var validationResult = _validator.Validate(command);
@@ -59,7 +61,8 @@ public class UpdateProfileSummaryCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Headers = Headers.CORS
         };
     }
 

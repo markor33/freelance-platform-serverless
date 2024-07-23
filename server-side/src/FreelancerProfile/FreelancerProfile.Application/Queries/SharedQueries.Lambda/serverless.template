@@ -1,0 +1,158 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+	"ProfessionResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Fn::ImportValue": "FreelancerRestApiRootResourceId"
+          },
+          "PathPart": "profession",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+    "GetProfessions" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "shared-queries-GetProfessions",
+        "Handler": "SharedQueries.Lambda::SharedQueries.Lambda.Handlers.ProfessionHandlers::Get",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "FPLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetProfessionsMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "ProfessionResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetProfessions.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "GetFreelancerByIdLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetProfessions"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/profession",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "LanguageResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Fn::ImportValue": "FreelancerRestApiRootResourceId"
+          },
+          "PathPart": "language",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+    "GetLanguages" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "shared-queries-GetLanguages",
+        "Handler": "SharedQueries.Lambda::SharedQueries.Lambda.Handlers.LanguageHandlers::Get",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "FPLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:FPSReadModelStore:1",
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetLanguagesMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "LanguageResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetLanguages.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "GetLanguageByIdLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetLanguages"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/language",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Common.Layer.Headers;
+using Common.Layer.JsonOptions;
 using FluentResults;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.Repositories;
@@ -40,7 +42,7 @@ public class AddSkillCommandHandler
         }
 
 
-        var command = JsonSerializer.Deserialize<AddSkillCommand>(request.Body);
+        var command = JsonSerializer.Deserialize<AddSkillCommand>(request.Body, JsonOptions.Options);
         command.FreelancerId = Guid.Parse(sub);
 
         var result = await CommandHandler(command);
@@ -48,7 +50,8 @@ public class AddSkillCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Headers = Headers.CORS
         };
     }
 

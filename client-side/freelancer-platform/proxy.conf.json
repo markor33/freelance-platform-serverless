@@ -1,8 +1,9 @@
 {
-    "/api/*": 
+    "/api/*":
         {
-            "target": "http://localhost:10000",
-            "secure": false
+            "target": "https://zfh4rsu0e2.execute-api.eu-central-1.amazonaws.com",
+            "secure": true,
+            "changeOrigin": true
         },
     "/hub/*": {
         "target": "ws://localhost:10000",

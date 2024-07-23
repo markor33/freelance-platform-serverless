@@ -17,6 +17,11 @@ fieldset {
     justify-content: flex-end;
 }
 
+.address-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .general-info-container {
     padding: 5% 5% 0% 5%;
 }

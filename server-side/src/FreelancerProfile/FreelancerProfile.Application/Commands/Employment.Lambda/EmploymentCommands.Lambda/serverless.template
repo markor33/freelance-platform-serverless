@@ -47,6 +47,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "POST",
         "ResourceId": {
           "Ref": "FreelancerByIdEmploymentResource"
@@ -132,6 +133,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdEmploymentByIdResource"
@@ -206,6 +208,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "DELETE",
         "ResourceId": {
           "Ref": "FreelancerByIdEmploymentByIdResource"

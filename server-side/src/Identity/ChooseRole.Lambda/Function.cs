@@ -9,6 +9,8 @@ using Amazon.EventBridge;
 using System.Text.Json;
 using EventBus;
 using Amazon.EventBridge.Model;
+using Common.Layer.JsonOptions;
+using Common.Layer.Headers;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -57,7 +59,7 @@ public class Function
                 };
             }
 
-            var requestBody = JsonSerializer.Deserialize<RequestBody>(request.Body);
+            var requestBody = JsonSerializer.Deserialize<RequestBody>(request.Body, JsonOptions.Options);
 
             var response = await AddUserToGroup(username, requestBody.Role);
 
@@ -69,6 +71,7 @@ public class Function
             return new APIGatewayProxyResponse()
             {
                 StatusCode = ((int)response.HttpStatusCode),
+                Headers = Headers.CORS
             };
         }
         catch (Exception ex)
