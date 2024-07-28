@@ -31,7 +31,7 @@ export class ProposalInfoDialogComponent {
   }
 
   ngOnInit() {
-    this.proposalService.get(this.proposalId).subscribe((proposal) => this.proposal = proposal);
+    this.proposalService.get(this.proposalId, this.jobId).subscribe((proposal) => this.proposal = proposal);
   }
 
   static open(dialog: MatDialog, jobId: string, proposalId: string): MatDialogRef<ProposalInfoDialogComponent> {
