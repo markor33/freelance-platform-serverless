@@ -1,0 +1,130 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description"              : "",
+    "Resources"                : {
+        "JobServiceResource" : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiRootResourceId"
+                },
+                "PathPart" : "job-service",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+        "JobResource"        : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "JobServiceResource"
+                },
+                "PathPart" : "job",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+        "JobByIdResource"    : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "JobResource"
+                },
+                "PathPart" : "{id}",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+        "JobByClientResource"    : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "JobResource"
+                },
+                "PathPart" : "client",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+
+        "ProposalResource"        : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "JobByIdResource"
+                },
+                "PathPart" : "proposal",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+        "ProposalByIdResource"        : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "ProposalResource"
+                },
+                "PathPart" : "{proposalId}",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        }
+
+    },
+    "Outputs"                  : {
+        "JobServiceResource" : {
+            "Value" : {
+                "Ref" : "JobServiceResource"
+            },
+            "Export" : {
+                "Name" : "JobServiceResource"
+            }
+        },
+        "JobResource"        : {
+            "Value" : {
+                "Ref" : "JobResource"
+            },
+            "Export" : {
+                "Name" : "JobResource"
+            }
+        },
+        "JobByIdResource"    : {
+            "Value" : {
+                "Ref" : "JobByIdResource"
+            },
+            "Export" : {
+                "Name" : "JobByIdResource"
+            }
+        },
+        "JobByClientResource"    : {
+            "Value" : {
+                "Ref" : "JobByClientResource"
+            },
+            "Export" : {
+                "Name" : "JobByClientResource"
+            }
+        },
+        "ProposalResource"    : {
+            "Value" : {
+                "Ref" : "ProposalResource"
+            },
+            "Export" : {
+                "Name" : "ProposalResource"
+            }
+        },
+        "ProposalByIdResource"    : {
+            "Value" : {
+                "Ref" : "ProposalByIdResource"
+            },
+            "Export" : {
+                "Name" : "ProposalByIdResource"
+            }
+        }
+    }
+}

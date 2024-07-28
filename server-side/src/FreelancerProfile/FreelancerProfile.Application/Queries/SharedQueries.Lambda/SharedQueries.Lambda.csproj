@@ -16,7 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Common\Common.Layer.csproj" />
-    <ProjectReference Include="..\..\..\FreelancerProfile.Persistence\ReadModelStore\ReadModelStore.csproj" />
+    <ProjectReference Include="..\..\..\FreelancerProfile.Persistence\ReadModelStore\FreelancerProfile.ReadModelStore.csproj" />
     <ProjectReference Include="..\ReadModel\ReadModel.csproj" />
   </ItemGroup>
 </Project>

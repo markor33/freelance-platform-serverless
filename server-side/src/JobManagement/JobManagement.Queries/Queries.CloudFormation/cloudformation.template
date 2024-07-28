@@ -1,0 +1,190 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+	"Description" : "Common AWS Infrastructure for JobManagement Query handlers",
+
+	"Resources" : {
+		"JobReadModelStore": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "JobReadModelStore",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      },
+        "ProposalReadModelStore": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "ProposalReadModelStore",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "Id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "Id", "KeyType": "HASH" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      },
+        "JobLambdaQueryRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "JobLambdaQueryRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          ],
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicyJob",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "JobReadModelStore",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyProposal",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "ProposalReadModelStore",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyLanguageRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "LanguageRepoArn" }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyProfessionRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "ProfessionRepoArn" }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+	},
+
+	"Outputs" : {
+        "JobLambdaQueryRoleArn": {
+          "Description": "ARN of the IAM role for Lambda FreelancerProfile Query execution",
+          "Value": {
+              "Fn::GetAtt": [
+                  "JobLambdaQueryRole",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "JobLambdaQueryRoleArn"
+          }
+        },
+        "JobReadModelStoreArn": {
+          "Description": "ARN of the FP DynamoDB Read Model Store",
+          "Value": {
+              "Fn::GetAtt": [
+                  "JobReadModelStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "JobReadModelStoreArn"
+          }
+        },
+        "ProposalReadModelStoreArn": {
+          "Description": "ARN of the FP DynamoDB Read Model Store",
+          "Value": {
+              "Fn::GetAtt": [
+                  "ProposalReadModelStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "ProposalReadModelStoreArn"
+          }
+        }
+	}
+}

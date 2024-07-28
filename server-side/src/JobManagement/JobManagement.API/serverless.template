@@ -1,0 +1,160 @@
+
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+	"JobEventStore": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "JobEventStore",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "EventId",
+              "AttributeType": "S"
+            },
+            {
+              "AttributeName": "AggregateId",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            { "AttributeName": "AggregateId", "KeyType": "HASH" },
+            { "AttributeName": "EventId", "KeyType": "RANGE" }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          },
+          "StreamSpecification": {
+            "StreamViewType": "NEW_IMAGE"
+          }
+        }
+      },
+      "JobLambdaCommandRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "RoleName": "JobLambdaCommandRole",
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          ],
+          "Policies": [
+            {
+              "PolicyName": "DynamoDBAccessPolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "JobEventStore",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyLanguageRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "LanguageRepoArn" }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyProfessionRepo",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": { "Fn::ImportValue": "ProfessionRepoArn" }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+  },
+  "Outputs": {
+    "JobEventStoreArn": {
+        "Description": "ARN of the JobEventStore DynamoDB Event Store (Write Model)",
+          "Value": {
+              "Fn::GetAtt": [
+                  "JobEventStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "JobEventStoreArn"
+          }
+    },
+    "JobEventStoreStreamArn": {
+          "Description": "ARN of the FP DynamoDB Event Store Stream",
+          "Value": {
+              "Fn::GetAtt": [
+                  "JobEventStore",
+                  "StreamArn"
+              ]
+          },
+          "Export": {
+              "Name": "JobEventStoreStreamArn"
+          }
+    },
+    "JobLambdaCommandRoleArn": {
+            "Description": "ARN of the IAM role for Lambda JobManagement Commands execution",
+            "Value": {
+                "Fn::GetAtt": [
+                    "JobLambdaCommandRole",
+                    "Arn"
+                ]
+            },
+            "Export": {
+              "Name": "JobLambdaCommandRoleArn"
+            }
+        }
+  }
+}

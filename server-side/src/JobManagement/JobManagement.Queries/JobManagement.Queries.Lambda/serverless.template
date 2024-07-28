@@ -1,0 +1,270 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "GetAllJobs" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-GetAllJobs",
+        "Handler": "JobManagement.Queries.Lambda::JobManagement.Queries.Lambda.Handlers.Job.GetAllQueryHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "JobLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetAllJobsMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::ImportValue": "JobResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetAllJobs.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "GetAllJobsLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetAllJobs"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/job-service/job",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "GetJobById" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-GetJobById",
+        "Handler": "JobManagement.Queries.Lambda::JobManagement.Queries.Lambda.Handlers.Job.GetByIdQueryHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "JobLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetJobByIdMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::ImportValue": "JobByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetJobById.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      }
+    },
+    "GetJobByIdLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetJobById"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/job-service/job/{id}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "GetJobsByClient" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-GetJobsByClient",
+        "Handler": "JobManagement.Queries.Lambda::JobManagement.Queries.Lambda.Handlers.Job.GetByClientQueryHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "JobLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetJobsByClientMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::ImportValue": "JobByClientResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetJobsByClient.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "GetJobsByClientLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetJobsByClient"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/job-service/job/client",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "GetProposalById" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-GetProposalById",
+        "Handler": "JobManagement.Queries.Lambda::JobManagement.Queries.Lambda.Handlers.Proposal.GetByIdQueryHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::ImportValue": "JobLambdaQueryRoleArn" },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+    "GetProposalByIdMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::ImportValue": "ProposalByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.id": true,
+          "method.request.path.proposalId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetProposalById.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.id": "method.request.path.id",
+            "integration.request.path.proposalId": "method.request.path.proposalId"
+          }
+        }
+      }
+    },
+    "GetProposalByIdLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetProposalById"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/job-service/job/{id}/proposal/{proposalId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

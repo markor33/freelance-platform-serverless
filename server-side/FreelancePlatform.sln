@@ -55,15 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmploymentCommands.Lambda",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CertificationCommands.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Commands\Cert.Lambda\CertificationCommands.Lambda\CertificationCommands.Lambda.csproj", "{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreelancerProfile.IntegrationTests", "src\FreelancerProfile\FreelancerProfile.IntegrationTests\FreelancerProfile.IntegrationTests.csproj", "{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientProfile", "ClientProfile", "{CF144A10-D79B-4B5B-860E-94BE13C6B0D9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientProfile.Lambda", "src\ClientProfile\ClientProfile.Lambda\ClientProfile.Lambda.csproj", "{728CA707-9D03-4C65-AA25-6B0E600E865C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientProfile.IntegrationTests", "src\ClientProfile\ClientProfile.IntegrationTests\ClientProfile.IntegrationTests.csproj", "{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedQueries.Lambda", "src\FreelancerProfile\FreelancerProfile.Application\Queries\SharedQueries.Lambda\SharedQueries.Lambda.csproj", "{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreelancerProfile.IntegrationTests", "src\FreelancerProfile\FreelancerProfile.IntegrationTests\FreelancerProfile.IntegrationTests.csproj", "{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,18 +127,6 @@ Global
 		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{728CA707-9D03-4C65-AA25-6B0E600E865C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{728CA707-9D03-4C65-AA25-6B0E600E865C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{728CA707-9D03-4C65-AA25-6B0E600E865C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{728CA707-9D03-4C65-AA25-6B0E600E865C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,10 +158,6 @@ Global
 		{467AE75A-7B28-44CF-AF0B-37E68E9D4EB9} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
 		{AF7F2A9A-2A25-4637-AE68-14D59FDFF8B2} = {A7843793-E23B-488D-8CFC-EF40D1FA8821}
 		{82CC88FE-33FC-4CD1-BA4B-86ACA10988A9} = {C02880A3-4CFF-431E-ABC1-DAE86A1E7E3C}
-		{CF144A10-D79B-4B5B-860E-94BE13C6B0D9} = {93170552-5ADE-4715-A2AC-CFBBF81BD4D5}
-		{728CA707-9D03-4C65-AA25-6B0E600E865C} = {CF144A10-D79B-4B5B-860E-94BE13C6B0D9}
-		{B0B1485E-2562-4E97-8FEB-5F6D6DB9EFF5} = {CF144A10-D79B-4B5B-860E-94BE13C6B0D9}
-		{3F5A9E4D-F53D-4C4F-BC7F-7CA0EA6353E3} = {488328B2-D206-49A5-9D21-F6C509FD6167}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22C60BB7-5682-4EB5-9983-271E00C10231}

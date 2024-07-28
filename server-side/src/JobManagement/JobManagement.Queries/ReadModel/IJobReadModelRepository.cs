@@ -1,0 +1,9 @@
+﻿namespace ReadModel;
+
+public interface IJobReadModelRepository
+{
+    Task<JobViewModel> GetByIdAsync(Guid id);
+    Task<List<JobViewModel>> GetByClient(Guid clientId);
+    Task<List<JobViewModel>> GetAllAsync();
+    Task SaveAsync(JobViewModel jobViewModel);
+}
