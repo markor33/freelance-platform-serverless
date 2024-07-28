@@ -1,0 +1,8 @@
+
+{
+    "region" : "eu-central-1",
+    "profile" : "default",
+    "s3-bucket" : "freelancer-job-service",
+    "template"  : "serverless.template",
+    "stack-name" : "jms-commands"
+}

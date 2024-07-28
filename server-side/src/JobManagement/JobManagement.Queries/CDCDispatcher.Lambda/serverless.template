@@ -1,0 +1,99 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "IaC Template for DynamoDB Dispatcher Lambda",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "CDCDispatcherIAMRole": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+            "RoleName": "jms-queries-CDCDispatcherIAMRole",
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "lambda.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            },
+            "ManagedPolicyArns": [
+              "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            ],
+            "Policies": [
+                {
+                    "PolicyName": "DynamoDBStreamPolicy",
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Sid": "VisualEditor0",
+                                "Effect": "Allow",
+                                "Action": [
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:GetRecords"
+                                ],
+                                "Resource": { "Fn::ImportValue": "JobEventStoreStreamArn" }
+                            },
+                            {
+                              "Effect": "Allow",
+                              "Action": [
+                                "events:PutEvents"
+                              ],
+                              "Resource": {
+                                "Fn::ImportValue": "FPEventBusArn"
+                              }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "JobEventStoreStreamLambdaTrigger": {
+        "Type": "AWS::Lambda::EventSourceMapping",
+        "Properties": {
+            "EventSourceArn": { "Fn::ImportValue": "JobEventStoreStreamArn" },
+            "FunctionName": {
+                "Fn::GetAtt": [
+                    "CDCDispatcher",
+                    "Arn"
+                ]
+            },
+            "BatchSize": 5,
+            "StartingPosition": "LATEST"
+        }
+    },
+    "CDCDispatcher" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-CDCDispatcher",
+        "Handler": "CDCDispatcher.Lambda::CDCDispatcher.Lambda.Function::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [
+            "CDCDispatcherIAMRole",
+            "Arn"
+          ]
+        },
+        "Layers": [ "arn:aws:lambda:eu-central-1:891376935045:layer:EventBusLayer:1" ],
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Environment": {
+            "Variables": {
+                "SERVICE_NAME": "job-service",
+                "EVENT_BUS": { "Fn::ImportValue": "FPEventBusArn" }
+            }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "MyEventBridgeRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "EventBridgeToStepFunctionsPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "states:StartExecution",
+                  "Resource": "arn:aws:states:eu-central-1:891376935045:stateMachine:DistributedTransaction-ReserveCredits"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ProposalCreatedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ProposalCreatedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "ProposalCreated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Id": "ReserveCreditsTarget",
+            "Arn": "arn:aws:states:eu-central-1:891376935045:stateMachine:DistributedTransaction-ReserveCredits",
+            "RoleArn": {
+              "Fn::GetAtt": ["MyEventBridgeRole", "Arn"]
+            }
+          }
+        ]
+      }
+    },
+    "PermissionProposalCreated": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProposalCreatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ProposalCreatedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ProposalCreatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "dt-ReserveCredits-ProposalCreatedHandler",
+        "Handler": "ReserveCredits.Lambda::ReserveCredits.Lambda.Handlers.ProposalCreatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::ImportValue": "FPLambdaCommandRoleArn"
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FPSWriteModelStore:4",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:FreelancerProfileDomain:6"
+        ]
+      }
+    },
+
+    "CreditsSubstractionSuccess" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "dt-ReserveCredits-CreditsSubstractionSuccessHandler",
+        "Handler": "ReserveCredits.Lambda::ReserveCredits.Lambda.Handlers.CreditsSubstractionSuccessHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::ImportValue": "JobLambdaCommandRoleArn"
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:JobManagementDomainLayer:2"
+        ]
+      }
+    },
+
+    "CreditsSubstractionFail" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "dt-ReserveCredits-CreditsSubstractionFailHandler",
+        "Handler": "ReserveCredits.Lambda::ReserveCredits.Lambda.Handlers.CreditsSubstractionFailHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::ImportValue": "JobLambdaCommandRoleArn"
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:JobManagementDomainLayer:2"
+        ]
+      }
+    }
+  }
+}
