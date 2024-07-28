@@ -1,23 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import {from, Observable, switchMap} from 'rxjs';
+import { fetchAuthSession } from "aws-amplify/auth"
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-    
-    constructor(private jwtHelper: JwtHelperService) { }
+
+    constructor() { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        let token = this.jwtHelper.tokenGetter();
-        if (token) {
+      return from(fetchAuthSession()).pipe(
+        switchMap(({ tokens }) => {
+          if (tokens?.accessToken) {
             request = request.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${token}`
-                }
+              setHeaders: {
+                Authorization: `${tokens.accessToken}`
+              }
             });
-        }
-
-        return next.handle(request);
+          }
+          return next.handle(request);
+        })
+      );
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Common.Layer.Headers;
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.Repositories;
@@ -64,7 +65,8 @@ public class DeleteEmploymentCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Headers = Headers.CORS
         };
     }
 

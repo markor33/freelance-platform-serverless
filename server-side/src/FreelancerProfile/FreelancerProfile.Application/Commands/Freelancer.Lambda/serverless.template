@@ -7,7 +7,7 @@
     "CreateFreelancer": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "CreateFreelancer",
+        "FunctionName": "fps-commands-CreateFreelancer",
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.CreateFreelancerCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -76,7 +76,7 @@
     "SetupProfile": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "SetupProfile",
+        "FunctionName": "fps-commands-SetupProfile",
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.SetupProfileCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -103,6 +103,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "PUT",
         "ResourceId": {
           "Fn::ImportValue": "FreelancerByIdResource"
@@ -149,7 +150,7 @@
     "UpdateProfileSummary": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "UpdateProfileSummary",
+        "FunctionName": "fps-commands-UpdateProfileSummary",
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.UpdateProfileSummaryCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -188,6 +189,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdProfileSummaryResource"
@@ -234,7 +236,7 @@
     "AddSkill": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "AddSkill",
+        "FunctionName": "fps-commands-AddSkill",
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.AddSkillCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -273,6 +275,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdSkillResource"
@@ -379,6 +382,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+        "AuthorizationScopes": [ "FRS/rw" ],
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdProfilePictureResource"

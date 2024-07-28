@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.305.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobManagement.Application\JobManagement.Application.Commands.csproj" />
+    <ProjectReference Include="..\JobManagement.Domain\JobManagement.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Protobuf Include="..\..\ClientProfile\ClientProfile.API\Proto\clientProfile.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+</Project>

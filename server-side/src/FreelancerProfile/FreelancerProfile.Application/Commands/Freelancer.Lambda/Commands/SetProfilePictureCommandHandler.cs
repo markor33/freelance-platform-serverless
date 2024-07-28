@@ -3,6 +3,8 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Common.Layer.Headers;
+using Common.Layer.JsonOptions;
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.Repositories;
@@ -51,7 +53,7 @@ public class SetProfilePictureCommandHandler
             };
         }
 
-        var command = JsonSerializer.Deserialize<SetProfilePictureCommand>(request.Body);
+        var command = JsonSerializer.Deserialize<SetProfilePictureCommand>(request.Body, JsonOptions.Options);
         command.FreelancerId = Guid.Parse(sub);
 
         var validationResult = _validator.Validate(command);
@@ -71,7 +73,8 @@ public class SetProfilePictureCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Headers = Headers.CORS
         };
     }
 

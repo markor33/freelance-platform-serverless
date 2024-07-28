@@ -25,6 +25,10 @@ export class Freelancer {
     educations: Education[] = new Array();
     certifications: Certification[] = new Array();
     employments: Employment[] = new Array();
+
+    isProfileSetupCompleted() {
+      return this.profession !== null;
+    }
 }
 
 export class ProfileSummary {

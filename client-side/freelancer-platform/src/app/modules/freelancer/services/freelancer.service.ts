@@ -25,14 +25,14 @@ export class FreelancerService {
   constructor(private httpClient: HttpClient) { }
 
   setupProfile(profileSetupCommand: ProfileSetupCommand): Observable<any> {
-    return this.httpClient.put<Freelancer>(`api/freelancer/freelancer`, profileSetupCommand)
+    return this.httpClient.put<Freelancer>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}`, profileSetupCommand)
       .pipe(
         map(() => this.profileSetupCompletedSource.next(true))
       );
   }
 
   get(freelancerId: string): Observable<Freelancer> {
-    return this.httpClient.get<Freelancer>(`api/freelancer/freelancer/${freelancerId}`)
+    return this.httpClient.get<Freelancer>(`api/freelancer-service/freelancer/${freelancerId}`)
       .pipe(
         map((freelancer) => {
           this.currentFreelancer = freelancer;
@@ -45,11 +45,11 @@ export class FreelancerService {
   setProfilePicture(profilePicture: File): Observable<string> {
     var form = new FormData();
     form.append('profilePicture', profilePicture);
-    return this.httpClient.put<string>(`api/freelancer/freelancer/${this.currentFreelancer.id}/profile-picture`, form);
+    return this.httpClient.put<string>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/profile-picture`, form);
   }
 
   editProfileSummary(profileSummary: ProfileSummary): Observable<void> {
-    return this.httpClient.put<ProfileSummary>(`api/freelancer/freelancer/${this.currentFreelancer.id}/profile-summary`, profileSummary)
+    return this.httpClient.put<ProfileSummary>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/profile-summary`, profileSummary)
       .pipe(
         map((profileSummary) => {
           this.currentFreelancer.profileSummary = profileSummary;
@@ -58,7 +58,7 @@ export class FreelancerService {
   }
 
   addEducation(addEducationCommand: AddEducationCommand): Observable<void> {
-    return this.httpClient.post<Education>(`api/freelancer/freelancer/${this.currentFreelancer.id}/education`, addEducationCommand)
+    return this.httpClient.post<Education>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/education`, addEducationCommand)
       .pipe(
         map((education) => {
           this.currentFreelancer.educations.push(education);
@@ -67,7 +67,7 @@ export class FreelancerService {
   }
 
   editEducation(editEducationCommand: EditEducationCommand): Observable<void> {
-    const url = `api/freelancer/freelancer/${this.currentFreelancer.id}/education/${editEducationCommand.educationId}`;
+    const url = `api/freelancer-service/freelancer/${this.currentFreelancer.id}/education/${editEducationCommand.educationId}`;
     return this.httpClient.put<any>(url, editEducationCommand)
       .pipe(
         map(() => {
@@ -82,7 +82,7 @@ export class FreelancerService {
   }
 
   deleteEducation(educationId: string): Observable<any> {
-    return this.httpClient.delete<any>(`api/freelancer/freelancer/${this.currentFreelancer.id}/education/${educationId}`)
+    return this.httpClient.delete<any>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/education/${educationId}`)
       .pipe(
         map(() => {
           const index = this.currentFreelancer.educations.findIndex(c => c.id === educationId);
@@ -93,7 +93,7 @@ export class FreelancerService {
   }
 
   addCertification(addCertificationCommand: AddCertificationCommand): Observable<void> {
-    return this.httpClient.post<Certification>(`api/freelancer/freelancer/${this.currentFreelancer.id}/certification`, addCertificationCommand)
+    return this.httpClient.post<Certification>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/certification`, addCertificationCommand)
       .pipe(
         map((certification) => {
           this.currentFreelancer.certifications.push(certification);
@@ -102,7 +102,7 @@ export class FreelancerService {
   }
 
   editCertification(editCertificationCommand: EditCertificationCommand): Observable<void> {
-    const url = `api/freelancer/freelancer/${this.currentFreelancer.id}/certification/${editCertificationCommand.certificationId}`;
+    const url = `api/freelancer-service/freelancer/${this.currentFreelancer.id}/certification/${editCertificationCommand.certificationId}`;
     return this.httpClient.put<any>(url, editCertificationCommand)
       .pipe(
         map(() => {
@@ -117,7 +117,7 @@ export class FreelancerService {
   }
 
   deleteCertification(certificationId: string): Observable<any> {
-    return this.httpClient.delete<any>(`api/freelancer/freelancer/${this.currentFreelancer.id}/certification/${certificationId}`)
+    return this.httpClient.delete<any>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/certification/${certificationId}`)
       .pipe(
         map(() => {
           const index = this.currentFreelancer.certifications.findIndex(c => c.id === certificationId);
@@ -128,7 +128,7 @@ export class FreelancerService {
   }
 
   addEmployment(addEmploymentCommand: AddEmploymentCommand): Observable<void> {
-    return this.httpClient.post<Employment>(`api/freelancer/freelancer/${this.currentFreelancer.id}/employment`, addEmploymentCommand)
+    return this.httpClient.post<Employment>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/employment`, addEmploymentCommand)
       .pipe(
         map((employment) => {
           this.currentFreelancer.employments.push(employment);
@@ -137,7 +137,7 @@ export class FreelancerService {
   }
 
   editEmployment(editEmploymentCommand: EditEmploymentCommand): Observable<void> {
-    const url = `api/freelancer/freelancer/${this.currentFreelancer.id}/employment/${editEmploymentCommand.employmentId}`
+    const url = `api/freelancer-service/freelancer/${this.currentFreelancer.id}/employment/${editEmploymentCommand.employmentId}`
     return this.httpClient.put<any>(url, editEmploymentCommand)
       .pipe(
         map(() => {
@@ -152,7 +152,7 @@ export class FreelancerService {
   }
 
   deleteEmployment(employmentId: string): Observable<void> {
-    return this.httpClient.delete<any>(`api/freelancer/freelancer/${this.currentFreelancer.id}/employment/${employmentId}`)
+    return this.httpClient.delete<any>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/employment/${employmentId}`)
       .pipe(
         map(() => {
           const index = this.currentFreelancer.employments.findIndex(c => c.id === employmentId);
@@ -163,7 +163,7 @@ export class FreelancerService {
   }
 
   addSkills(addSkillsCommand: AddSkillCommand): Observable<void> {
-    return this.httpClient.post<Skill[]>('api/freelancer/freelancer/skill', addSkillsCommand)
+    return this.httpClient.put<Skill[]>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/skill`, addSkillsCommand)
       .pipe(
         map((skills) => {
           this.currentFreelancer.skills = skills;

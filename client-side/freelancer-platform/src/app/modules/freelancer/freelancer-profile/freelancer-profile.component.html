@@ -58,7 +58,7 @@
             (mouseleave)="profileSummaryHover = false">
             <div class="content-actions">
                 <h2>{{freelancer.profileSummary.title}}</h2>
-                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && profileSummaryHover === true" 
+                <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && profileSummaryHover === true"
                     (click)="openEditProfileSummaryDialog(freelancer.profileSummary)">
                     <mat-icon>edit</mat-icon>
                 </button>
@@ -81,7 +81,7 @@
             (mouseleave)="educationHover = false">
             <span class="title icon-text-align">
                 <h2>Education:</h2>&nbsp;
-                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && educationHover === true" (click)="openAddEducationDialog()">
+                <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && educationHover === true" (click)="openAddEducationDialog()">
                     <mat-icon>add_circle</mat-icon>
                 </button>
             </span>
@@ -90,11 +90,11 @@
                     <div>
                         <div class="content-actions">
                             <h3>{{education.schoolName}}</h3>
-                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && educationHover === true" 
+                            <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && educationHover === true"
                                 (click)="openEditEducationDialog(education)">
                                 <mat-icon>edit</mat-icon>
                             </button>
-                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && educationHover === true" 
+                            <button mat-icon-button color="warn" *ngIf="role === 'Freelancer' && educationHover === true"
                                 (click)="deleteEducation(education.id)">
                                 <mat-icon>delete</mat-icon>
                             </button>
@@ -111,7 +111,7 @@
                 (mouseleave)="certificationHover = false">
             <span class="title icon-text-align">
                 <h2>Certification:</h2>&nbsp;
-                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && certificationHover === true" (click)="openAddCertificationDialog()">
+                <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && certificationHover === true" (click)="openAddCertificationDialog()">
                     <mat-icon>add_circle</mat-icon>
                 </button>
             </span>
@@ -120,11 +120,11 @@
                     <div>
                         <div class="content-actions">
                             <h3>{{certification.name}}</h3>
-                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && certificationHover === true" 
+                            <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && certificationHover === true"
                                 (click)="openEditCertificationDialog(certification)">
                                 <mat-icon>edit</mat-icon>
                             </button>
-                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && certificationHover === true" 
+                            <button mat-icon-button color="warn" *ngIf="role === 'Freelancer' && certificationHover === true"
                                 (click)="deleteCertification(certification.id)">
                                 <mat-icon>delete</mat-icon>
                             </button>
@@ -141,7 +141,7 @@
             (mouseleave)="skillsHover = false">
             <span class="title icon-text-align">
                 <h2>Skills:</h2>&nbsp;
-                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && skillsHover === true" (click)="openAddSkillDialog()">
+                <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && skillsHover === true" (click)="openAddSkillDialog()">
                     <mat-icon>edit</mat-icon>
                 </button>
             </span>
@@ -156,7 +156,7 @@
             (mouseleave)="employmentHover = false">
             <span class="title icon-text-align">
                 <h2>Employment:</h2>&nbsp;
-                <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && employmentHover === true" (click)="openAddEmploymentDialog()">
+                <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && employmentHover === true" (click)="openAddEmploymentDialog()">
                     <mat-icon>add_circle</mat-icon>
                 </button>
             </span>
@@ -165,11 +165,11 @@
                     <div>
                         <div class="content-actions">
                             <h3>{{employment.title}}</h3>
-                            <button mat-icon-button color="primary" *ngIf="role === 'FREELANCER' && employmentHover === true" 
+                            <button mat-icon-button color="primary" *ngIf="role === 'Freelancer' && employmentHover === true"
                                 (click)="openEditEmploymentDialog(employment)">
                                 <mat-icon>edit</mat-icon>
                             </button>
-                            <button mat-icon-button color="warn" *ngIf="role === 'FREELANCER' && employmentHover === true" 
+                            <button mat-icon-button color="warn" *ngIf="role === 'Freelancer' && employmentHover === true"
                                 (click)="deleteEmployment(employment.id)">
                                 <mat-icon>delete</mat-icon>
                             </button>

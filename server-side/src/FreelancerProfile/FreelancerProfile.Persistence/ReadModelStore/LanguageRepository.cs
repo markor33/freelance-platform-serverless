@@ -18,6 +18,16 @@ public class LanguageRepository : ILanguageRepository
         _context = new DynamoDBContext(_client);
     }
 
+    public async Task<List<Language>> Get()
+    {
+        var scanConditions = new List<ScanCondition>();
+        var languageViewModels = await _context.ScanAsync<LanguageViewModel>(scanConditions).GetRemainingAsync();
+
+        var languages = languageViewModels.Select(x => x.ToLanguage()).ToList();
+
+        return languages;
+    }
+
     public async Task<Language> GetByIdAsync(int id)
     {
         var languageViewModel = await _context.LoadAsync<LanguageViewModel>(id);
