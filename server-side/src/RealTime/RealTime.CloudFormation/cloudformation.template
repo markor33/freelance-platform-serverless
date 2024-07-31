@@ -1,0 +1,345 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description"              : "",
+    "Resources"                : {
+        "MessagesTable" : {
+            "Type" : "AWS::DynamoDB::Table",
+            "Properties" : {
+                "TableName" : "Messages",
+                "AttributeDefinitions" : [
+                    {
+                        "AttributeName" : "ChatId",
+                        "AttributeType" : "S"
+                    },
+                    {
+                        "AttributeName" : "Id",
+                        "AttributeType" : "S"
+                    }
+                ],
+                "KeySchema"            : [
+                    {
+                        "AttributeName" : "ChatId",
+                        "KeyType"       : "HASH"
+                    },
+                    {
+                        "AttributeName" : "Id",
+                        "KeyType"       : "RANGE"
+                    }
+                ],
+                "ProvisionedThroughput" : {
+                    "ReadCapacityUnits" : 5,
+                    "WriteCapacityUnits" : 5
+                }
+            }
+        },
+        "ChatsTable"    : {
+            "Type" : "AWS::DynamoDB::Table",
+            "Properties" : {
+                "TableName" : "Chats",
+                "AttributeDefinitions" : [
+                    {
+                        "AttributeName" : "Id",
+                        "AttributeType" : "S"
+                    },
+                    {
+                        "AttributeName" : "ClientId",
+                        "AttributeType" : "S"
+                    },
+                    {
+                        "AttributeName" : "FreelancerId",
+                        "AttributeType" : "S"
+                    }
+                ],
+                "KeySchema"            : [
+                    {
+                        "AttributeName" : "Id",
+                        "KeyType"       : "HASH"
+                    }
+                ],
+                "GlobalSecondaryIndexes" : [
+                    {
+                        "IndexName" : "ClientIdIndex",
+                        "KeySchema" : [
+                            {
+                                "AttributeName" : "ClientId",
+                                "KeyType"       : "HASH"
+                            }
+                        ],
+                        "Projection" : {
+                            "ProjectionType" : "ALL"
+                        },
+                        "ProvisionedThroughput" : {
+                            "ReadCapacityUnits" : 5,
+                            "WriteCapacityUnits" : 5
+                        }
+                    },
+                    {
+                        "IndexName" : "FreelancerIdIndex",
+                        "KeySchema" : [
+                            {
+                                "AttributeName" : "FreelancerId",
+                                "KeyType"       : "HASH"
+                            }
+                        ],
+                        "Projection" : {
+                            "ProjectionType" : "ALL"
+                        },
+                        "ProvisionedThroughput" : {
+                            "ReadCapacityUnits" : 5,
+                            "WriteCapacityUnits" : 5
+                        }
+                    }
+                ],
+                "ProvisionedThroughput"  : {
+                    "ReadCapacityUnits" : 5,
+                    "WriteCapacityUnits" : 5
+                }
+            }
+        },
+        "Chat-ConnectionMappingTable" : {
+            "Type" : "AWS::DynamoDB::Table",
+            "Properties" : {
+                "TableName" : "Chat-ConnectionMapping",
+                "AttributeDefinitions" : [
+                    {
+                        "AttributeName" : "Sub",
+                        "AttributeType" : "S"
+                    }
+                ],
+                "KeySchema"            : [
+                    {
+                        "AttributeName" : "Sub",
+                        "KeyType"       : "HASH"
+                    }
+                ],
+                "ProvisionedThroughput" : {
+                    "ReadCapacityUnits" : 5,
+                    "WriteCapacityUnits" : 5
+                }
+            }
+        },
+        "ChatLambdaCommandRole"       : {
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "RoleName" : "ChatLambdaCommandRole",
+                "AssumeRolePolicyDocument" : {
+                    "Version" : "2012-10-17",
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "Service" : "lambda.amazonaws.com"
+                            },
+                            "Action"    : "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns"        : [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ],
+                "Policies"                 : [
+                    {
+                        "PolicyName" : "DynamoDBAccessPolicyMessage",
+                        "PolicyDocument" : {
+                            "Version" : "2012-10-17",
+                            "Statement" : [
+                                {
+                                    "Effect" : "Allow",
+                                    "Action" : [
+                                        "dynamodb:PutItem",
+                                        "dynamodb:UpdateItem",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:BatchWriteItem"
+                                    ],
+                                    "Resource" : {
+                                        "Fn::GetAtt" : [
+                                            "MessagesTable",
+                                            "Arn"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName" : "DynamoDBAccessPolicyChats",
+                        "PolicyDocument" : {
+                            "Version" : "2012-10-17",
+                            "Statement" : [
+                                {
+                                    "Effect" : "Allow",
+                                    "Action" : [
+                                        "dynamodb:GetItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:DescribeTable"
+                                    ],
+                                    "Resource" : {
+                                        "Fn::GetAtt" : [
+                                            "ChatsTable",
+                                            "Arn"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName" : "DynamoDBAccessPolicyConnMapping",
+                        "PolicyDocument" : {
+                            "Version" : "2012-10-17",
+                            "Statement" : [
+                                {
+                                    "Effect" : "Allow",
+                                    "Action" : [
+                                        "dynamodb:GetItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:DescribeTable"
+                                    ],
+                                    "Resource" : {
+                                        "Fn::GetAtt" : [
+                                            "Chat-ConnectionMappingTable",
+                                            "Arn"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "ConnectHandler"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-ConnectHandler",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.ConnectHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+        },
+        "DisconnectHandler"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-DisconnectHandler",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.DisconnectHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+        },
+        "CreateChat"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-CreateChat",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.CreateChatCommandHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+        },
+        "GetMessages"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-GetMessages",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.GetMessagesQueryHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+        },
+        "GetChat"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-GetChat",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.GetQueryHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+       },
+       "SendMessage"           : {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "FunctionName" : "chat-SendMessage",
+                "Handler"      : "RealTime.Chat::RealTime.Chat.Handlers.SendMessageCommandHandler::FunctionHandler",
+                "Runtime"      : "dotnet8",
+                "CodeUri"      : "",
+                "Description"  : "Default function",
+                "MemorySize"   : 256,
+                "Timeout"      : 30,
+                "Role"         : {
+                    "Fn::GetAtt" : [
+                        "ChatLambdaCommandRole",
+                        "Arn"
+                    ]
+                },
+                "Policies"     : [
+                    "AWSLambda_FullAccess"
+                ]
+            }
+       }
+    },
+    "Outputs"                  : {
+    }
+}
