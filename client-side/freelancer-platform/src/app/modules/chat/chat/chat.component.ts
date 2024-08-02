@@ -31,7 +31,6 @@ export class ChatComponent {
   ngOnInit() {
     this.chatService.get().subscribe((chats) => this.chats = chats);
     this.chatService.newMessageObserver.subscribe((message) => this.newMessageReceived(message));
-    this.chatService.newMessageResponseObserver.subscribe((message) => this.newMessageReceived(message));
   }
 
   openChat(chat: Chat) {
@@ -56,10 +55,11 @@ export class ChatComponent {
   }
 
   sendMessage() {
-    this.chatService.sendMessage(this.activeChat?.id as string, this.messageText).then();
+    this.chatService.sendMessage(this.activeChat?.id as string, this.messageText);
   }
 
   newMessageReceived(message: Message | null) {
+    console.log(message)
     if (message === null)
       return;
     if (this.activeChat?.id === message.chatId)
@@ -67,16 +67,16 @@ export class ChatComponent {
   }
 
   getOppositeParticipant(chat: Chat): any {
-    if (this.role == "CLIENT")
+    if (this.role == "Employeer")
       return {
         name: chat.freelancerName,
         isActive: chat.isFreelancerActive
       }
     else
-    return {
-      name: chat.clientName,
-      isActive: chat.isClientActive
-    }
+      return {
+        name: chat.clientName,
+        isActive: chat.isClientActive
+      }
   }
 
   getSender(message: Message) {

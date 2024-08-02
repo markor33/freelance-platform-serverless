@@ -13,11 +13,10 @@
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.1" />
-    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.400.2" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.400" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common\Common.Layer.csproj" />
-    <ProjectReference Include="..\..\..\EventBus\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\..\..\JobManagement\JobManagement.Domain\JobManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\..\JobManagement\JobManagement.Infrastructure\JobManagement.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

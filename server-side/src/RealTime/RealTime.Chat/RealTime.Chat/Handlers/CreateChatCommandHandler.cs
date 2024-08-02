@@ -16,6 +16,7 @@ public class CreateChatCommandHandler
     private readonly IChatRepository _chatRepository;
     private readonly IMessageRepository _messageRepository;
     private readonly IAmazonEventBridge _eventBridgeClient = new AmazonEventBridgeClient();
+    private ILambdaContext _context;
 
     public CreateChatCommandHandler()
     {
@@ -25,6 +26,7 @@ public class CreateChatCommandHandler
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
+        _context = context;
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"].Replace("Bearer ", ""));
         var sub = jwtToken.Subject;
 
@@ -58,6 +60,7 @@ public class CreateChatCommandHandler
         }
         catch (Exception ex)
         {
+            _context.Logger.LogError(ex.ToString());
             return false;
         }
     }

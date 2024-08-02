@@ -9,7 +9,6 @@ namespace RealTime.Chat.Persistence;
 public interface IConnectionMappingRepository
 {
     Task<ConnectionMapping> GetAsync(Guid sub);
-    Task<ConnectionMapping> GetByConnectionAsync(string connectionId);
     Task SaveAsync(ConnectionMapping connectionMapping);
     Task DeleteAsync(Guid sub);
     Task DeleteByConnectionAsync(string connectionId);
@@ -29,19 +28,6 @@ public class ConnectionMappingRepository : IConnectionMappingRepository
     public async Task<ConnectionMapping> GetAsync(Guid sub)
     {
         return await _context.LoadAsync<ConnectionMapping>(sub);
-    }
-
-    public async Task<ConnectionMapping> GetByConnectionAsync(string connectionId)
-    {
-        var conditions = new List<ScanCondition>
-        {
-            new ScanCondition("ConnectionId", ScanOperator.Equal, connectionId)
-        };
-
-        var search = _context.ScanAsync<ConnectionMapping>(conditions);
-        var results = await search.GetNextSetAsync();
-
-        return results.FirstOrDefault();
     }
 
     public async Task SaveAsync(ConnectionMapping connectionMapping)

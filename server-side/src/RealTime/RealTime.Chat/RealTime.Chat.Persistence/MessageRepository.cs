@@ -24,9 +24,7 @@ public class MessageRepository : IMessageRepository
 
     public async Task<List<Message>> GetByChat(Guid chatId)
     {
-        var messages = await _context.QueryAsync<Message>(chatId).GetRemainingAsync();
-
-        return messages.OrderBy(m => m.Date).ToList();
+        return await _context.QueryAsync<Message>(chatId).GetRemainingAsync();
     }
 
     public async Task SaveAsync(Message message)

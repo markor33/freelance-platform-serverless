@@ -15,8 +15,10 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ClientProfile\ClientProfile.Persistence\ClientProfile.Persistence.csproj" />
     <ProjectReference Include="..\..\Common\Common\Common.Layer.csproj" />
     <ProjectReference Include="..\..\FreelancerProfile\FreelancerProfile.Persistence\ReadModelStore\FreelancerProfile.ReadModelStore.csproj" />
     <ProjectReference Include="..\..\JobManagement\JobManagement.Queries\ReadModelStore\JobManagement.ReadModelStore.csproj" />
+    <ProjectReference Include="..\..\RealTime\RealTime.Chat\RealTime.Chat.Persistence\RealTime.Chat.Persistence.csproj" />
   </ItemGroup>
 </Project>

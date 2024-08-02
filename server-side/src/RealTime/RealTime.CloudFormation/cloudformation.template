@@ -213,7 +213,7 @@
                 ]
             }
         },
-        "ConnectHandler"           : {
+        "ConnectHandler"              : {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
                 "FunctionName" : "chat-ConnectHandler",
@@ -255,7 +255,7 @@
                 ]
             }
         },
-        "CreateChat"           : {
+        "CreateChat"                  : {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
                 "FunctionName" : "chat-CreateChat",
@@ -276,7 +276,7 @@
                 ]
             }
         },
-        "GetMessages"           : {
+        "GetMessages"                 : {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
                 "FunctionName" : "chat-GetMessages",
@@ -297,7 +297,7 @@
                 ]
             }
         },
-        "GetChat"           : {
+        "GetChat"                     : {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
                 "FunctionName" : "chat-GetChat",
@@ -317,8 +317,8 @@
                     "AWSLambda_FullAccess"
                 ]
             }
-       },
-       "SendMessage"           : {
+        },
+        "SendMessage"                 : {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
                 "FunctionName" : "chat-SendMessage",
@@ -338,8 +338,20 @@
                     "AWSLambda_FullAccess"
                 ]
             }
-       }
+        }
     },
     "Outputs"                  : {
+        "ChatsTableArn" : {
+            "Description" : "ARN of the FP DynamoDB Read Model Store",
+            "Value"       : {
+                "Fn::GetAtt" : [
+                    "ChatsTable",
+                    "Arn"
+                ]
+            },
+            "Export"      : {
+                "Name" : "ChatsTableArn"
+            }
+        }
     }
 }
