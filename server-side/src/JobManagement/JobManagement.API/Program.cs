@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.EventBridge;
 using Amazon.Runtime;
 using JobManagement.API.GrpcServices;
 using JobManagement.API.Security;
@@ -52,26 +53,13 @@ builder.Services.AddInfrastructure();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 
+builder.Services.AddAWSService<IAmazonEventBridge>();
+
 builder.Services.AddSingleton<IDynamoDBContext>(provider =>
 {
     var dynamoDbClient = provider.GetRequiredService<IAmazonDynamoDB>();
     return new DynamoDBContext(dynamoDbClient);
 });
-
-//builder.Services.AddGrpc(options =>
-//{
-//    options.EnableDetailedErrors = true;
-//});
-
-//builder.WebHost.UseKestrel(options => {
-//    options.Listen(IPAddress.Any, 80, listenOptions => {
-//        listenOptions.Protocols = HttpProtocols.Http1;
-//    });
-
-//    options.Listen(IPAddress.Any, 5000, listenOptions => {
-//        listenOptions.Protocols = HttpProtocols.Http2;
-//    });
-//});
 
 var app = builder.Build();
 
@@ -85,9 +73,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-//app.MapGrpcService<ProposalGrpcService>();
-//app.MapGrpcService<JobGrpcService>();
-//app.MapGrpcService<ContractGrpcService>();
 
 app.Run();
 

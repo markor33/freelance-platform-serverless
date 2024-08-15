@@ -18,6 +18,7 @@ namespace JobManagement.Domain.AggregatesModel.JobAggregate.Entities
 
         public Contract(Guid clientId, Guid freelancerId, Payment payment)
         {
+            Id = Guid.NewGuid();
             ClientId = clientId;
             FreelancerId = freelancerId;
             Payment = payment;

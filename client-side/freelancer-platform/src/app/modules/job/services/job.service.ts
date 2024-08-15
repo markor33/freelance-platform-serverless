@@ -20,8 +20,8 @@ export class JobService {
   };
 
   constructor(
-    private httpClient: HttpClient, 
-    private authService: AuthService) { 
+    private httpClient: HttpClient,
+    private authService: AuthService) {
     this.authService.userObserver.subscribe((user) => {
       this.clientId = user?.userId as string;
     });
@@ -42,23 +42,23 @@ export class JobService {
 
   create(createJobCommand: CreateJobCommand): Observable<Job> {
     createJobCommand.clientId = this.clientId;
-    return this.httpClient.post<Job>('api/job/job', createJobCommand, this.httpOptions);
+    return this.httpClient.post<Job>('local/api/job', createJobCommand, this.httpOptions);
   }
 
   edit(editJobCommand: EditJobCommand): Observable<Job> {
-    return this.httpClient.put<Job>(`api/job/job/${editJobCommand.jobId}`, editJobCommand, this.httpOptions);
+    return this.httpClient.put<Job>(`local/api/job/${editJobCommand.jobId}`, editJobCommand, this.httpOptions);
   }
 
   getAll(): Observable<Job[]> {
-    return this.httpClient.get<Job[]>('api/job/job');
+    return this.httpClient.get<Job[]>('api/job-service/job');
   }
 
   get(id: string): Observable<Job> {
-    return this.httpClient.get<Job>(`api/job/job/${id}`);
+    return this.httpClient.get<Job>(`api/job-service/job/${id}`);
   }
 
   getByClient(): Observable<Job[]> {
-    return this.httpClient.get<Job[]>(`api/job/job/client`, this.httpOptions);
+    return this.httpClient.get<Job[]>(`api/job-service/job/client`, this.httpOptions);
   }
 
   done(id: string): Observable<void> {
@@ -68,5 +68,5 @@ export class JobService {
   delete(id: string): Observable<void> {
     return this.httpClient.delete<any>(`api/job/job/${id}`, this.httpOptions);
   }
-  
+
 }

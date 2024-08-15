@@ -31,7 +31,6 @@ export class ChatComponent {
   ngOnInit() {
     this.chatService.get().subscribe((chats) => this.chats = chats);
     this.chatService.newMessageObserver.subscribe((message) => this.newMessageReceived(message));
-    this.chatService.newMessageResponseObserver.subscribe((message) => this.newMessageReceived(message));
   }
 
   openChat(chat: Chat) {
@@ -48,6 +47,7 @@ export class ChatComponent {
   }
 
   openProposalDialog() {
+    console.log(this.activeChat);
     this.dialog.open(ProposalInfoDialogComponent, {
       width: '50%',
       height: '80%',
@@ -56,7 +56,7 @@ export class ChatComponent {
   }
 
   sendMessage() {
-    this.chatService.sendMessage(this.activeChat?.id as string, this.messageText).then();
+    this.chatService.sendMessage(this.activeChat?.id as string, this.messageText);
   }
 
   newMessageReceived(message: Message | null) {
@@ -67,16 +67,16 @@ export class ChatComponent {
   }
 
   getOppositeParticipant(chat: Chat): any {
-    if (this.role == "CLIENT")
+    if (this.role == "Employeer")
       return {
         name: chat.freelancerName,
         isActive: chat.isFreelancerActive
       }
     else
-    return {
-      name: chat.clientName,
-      isActive: chat.isClientActive
-    }
+      return {
+        name: chat.clientName,
+        isActive: chat.isClientActive
+      }
   }
 
   getSender(message: Message) {

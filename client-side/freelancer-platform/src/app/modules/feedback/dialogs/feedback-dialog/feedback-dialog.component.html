@@ -20,8 +20,8 @@
             {{finishedContract.freelancerFeedback.text}}
         </span>
     </div>
-    <div class="create-feedback" 
-        *ngIf="(role === 'CLIENT' && !finishedContract.clientFeedback) || (role === 'FREELANCER' && !finishedContract.freelancerFeedback)">
+    <div class="create-feedback"
+        *ngIf="(role === 'Employeer' && !finishedContract.clientFeedback) || (role === 'Freelancer' && !finishedContract.freelancerFeedback)">
         <form (ngSubmit)="submitFeedback()">
             <h3>Give your feedback</h3>
             <div>

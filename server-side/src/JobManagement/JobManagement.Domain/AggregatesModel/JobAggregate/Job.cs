@@ -141,7 +141,7 @@ namespace JobManagement.Domain.AggregatesModel.JobAggregate
 
         public Contract FinishContract(Guid contractId)
         {
-            var @event = new ContactStatusChanged(Id, contractId, ContractStatus.FINISHED);
+            var @event = new ContractStatusChanged(Id, contractId, ContractStatus.FINISHED);
             Causes(@event);
 
             return Contracts.FindById(contractId);
@@ -149,7 +149,7 @@ namespace JobManagement.Domain.AggregatesModel.JobAggregate
 
         public Contract TerminateContract(Guid contractId)
         {
-            var @event = new ContactStatusChanged(Id, contractId, ContractStatus.TERMINATED);
+            var @event = new ContractStatusChanged(Id, contractId, ContractStatus.TERMINATED);
             Causes(@event);
 
             return Contracts.FindById(contractId);
@@ -236,7 +236,7 @@ namespace JobManagement.Domain.AggregatesModel.JobAggregate
             Contracts.Add(@event.Contract);
         }
 
-        private void When(ContactStatusChanged @event)
+        private void When(ContractStatusChanged @event)
         {
             var contract = Contracts.FindById(@event.ContractId);
             contract.ChangeStatus(@event.Status);

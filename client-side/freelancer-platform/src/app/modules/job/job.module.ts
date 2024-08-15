@@ -33,9 +33,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { EditJobDialogComponent } from './jobs-management/dialogs/edit-job-dialog/edit-job-dialog.component';
 
 export const jobRoutes: Routes = [
-  { path: 'job', component: JobSearchComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['FREELANCER']} },
-  { path: 'job-management', component: JobsManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['CLIENT']} },
-  { path: 'job/:id/proposal-management', component: ProposalsManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['CLIENT']} }
+  { path: 'job', component: JobSearchComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Freelancer']} },
+  { path: 'job-management', component: JobsManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Employeer']} },
+  { path: 'job/:id/proposal-management', component: ProposalsManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Employeer']} }
 ]
 
 @NgModule({
@@ -75,7 +75,7 @@ export const jobRoutes: Routes = [
     MatButtonModule
   ],
   exports: [
-    
+
   ]
 })
 export class JobModule { }

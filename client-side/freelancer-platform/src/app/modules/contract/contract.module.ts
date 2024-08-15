@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatMenuModule } from '@angular/material/menu';
 
 export const contractRoutes: Routes = [
-  { path: 'job/:id/contract-management', component: ContractManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['CLIENT']} },
+  { path: 'job/:id/contract-management', component: ContractManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Employeer']} },
   { path: 'my-contracts', component: MyContractsComponent, canActivate: [AuthGuard] }
 ];
 

@@ -7,6 +7,7 @@ export class Job {
     id: string = '';
     title: string = '';
     description: string = '';
+    created: Date = new Date();
     experienceLevel: ExperienceLevel = ExperienceLevel.JUNIOR;
     payment: Payment = new Payment();
     credits: number = 0;

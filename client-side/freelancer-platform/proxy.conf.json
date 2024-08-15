@@ -1,10 +1,16 @@
 {
-    "/api/*":
-        {
-            "target": "https://zfh4rsu0e2.execute-api.eu-central-1.amazonaws.com",
-            "secure": true,
-            "changeOrigin": true
-        },
+    "/api/*": {
+        "target": "https://zfh4rsu0e2.execute-api.eu-central-1.amazonaws.com",
+        "secure": true,
+        "changeOrigin": true
+    },
+    "/local/api/*": {
+      "target": "http://localhost:32768",
+      "secure": false,
+      "pathRewrite": {
+        "^/local/api": "/api"
+      }
+    },
     "/hub/*": {
         "target": "ws://localhost:10000",
         "secure": false,

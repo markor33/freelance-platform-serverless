@@ -24,14 +24,14 @@
         </div>
     </div>
     <div class="actions">
-        <app-start-contact *ngIf="role === 'CLIENT' && proposal.status === 0" [proposal]="proposal" [jobId]="jobId" ></app-start-contact>
-        <app-client-accept *ngIf="role === 'CLIENT' && proposal.status === 1" [proposal]="proposal" [jobId]="jobId"></app-client-accept>
-        <div *ngIf="role === 'FREELANCER' && proposal.status === 1">
+        <app-start-contact *ngIf="role === 'Employeer' && proposal.status === 0" [proposal]="proposal" [jobId]="jobId" ></app-start-contact>
+        <app-client-accept *ngIf="role === 'Employeer' && proposal.status === 1" [proposal]="proposal" [jobId]="jobId"></app-client-accept>
+        <div *ngIf="role === 'Freelancer' && proposal.status === 1">
             <h3>Status: please wait client's approval</h3>
         </div>
-        <div *ngIf="role === 'CLIENT' && proposal.status === 2">
+        <div *ngIf="role === 'Employeer' && proposal.status === 2">
             <h3>Status: you approved the proposal, please wait freelancer's response</h3>
         </div>
-        <app-freelancer-accept *ngIf="role === 'FREELANCER' && proposal.status === 2" [proposal]="proposal" [jobId]="jobId"></app-freelancer-accept>
+        <app-freelancer-accept *ngIf="role === 'Freelancer' && proposal.status === 2" [proposal]="proposal" [jobId]="jobId"></app-freelancer-accept>
     </div>
 </div>

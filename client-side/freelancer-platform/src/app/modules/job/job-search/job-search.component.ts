@@ -21,15 +21,16 @@ import { AuthService } from '../../auth/services/auth.service';
 export class JobSearchComponent {
 
   professions: Profession[] = [];
-  jobs: SearchJob[] = [];
-  
+  // jobs: SearchJob[] = [];
+  jobs: Job[] = [];
+
   queryText: string = '';
   searchJobFilters: SearchJobFilters = new SearchJobFilters();
   experienceLevels = ExperienceLevel;
   paymentTypes = PaymentType;
 
   constructor(
-    private jobService: JobService, 
+    private jobService: JobService,
     private dialog: MatDialog,
     private professionService: ProfessionService,
     private authService: AuthService,
@@ -42,13 +43,14 @@ export class JobSearchComponent {
   }
 
   search() {
-    this.jobService.search(this.queryText, this.searchJobFilters).subscribe((jobs) => this.jobs = jobs);
+    this.jobService.getAll().subscribe((jobs) => this.jobs = jobs);
+    // this.jobService.search(this.queryText, this.searchJobFilters).subscribe((jobs) => this.jobs = jobs);
   }
 
   onProfessionChange(event: MatCheckboxChange, profession: string) {
     if (event.checked) {
       this.searchJobFilters.professions.push(profession);
-    } 
+    }
     else {
       const index = this.searchJobFilters.professions.indexOf(profession);
       if (index >= 0) {
@@ -61,7 +63,7 @@ export class JobSearchComponent {
   onExperienceLevelChange(event: MatCheckboxChange, experienceLevel: ExperienceLevel) {
     if (event.checked) {
       this.searchJobFilters.experienceLevels.push(experienceLevel);
-    } 
+    }
     else {
       const index = this.searchJobFilters.experienceLevels.indexOf(experienceLevel);
       if (index >= 0) {
@@ -75,7 +77,7 @@ export class JobSearchComponent {
     if (event.checked) {
       this.searchJobFilters.paymentTypes.push(paymentType);
       this.search();
-    } 
+    }
     else {
       const index = this.searchJobFilters.paymentTypes.indexOf(paymentType);
       if (index >= 0) {

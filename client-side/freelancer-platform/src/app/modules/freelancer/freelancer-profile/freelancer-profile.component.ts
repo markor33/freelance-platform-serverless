@@ -58,7 +58,7 @@ export class FreelancerProfileComponent {
     this.freelancerService.get(this.freelancerId).subscribe({
       next: (freelancer) => this.freelancer = freelancer
     });
-    // this.feedbackService.getByFreelancer(this.freelancerId).subscribe((feedbacks) => this.feedbacks = feedbacks);
+    this.feedbackService.getByFreelancer(this.freelancerId).subscribe((feedbacks) => this.feedbacks = feedbacks);
   }
 
   openSetProfilePictureDialog() {

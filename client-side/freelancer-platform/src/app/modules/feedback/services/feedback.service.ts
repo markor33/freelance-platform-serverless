@@ -11,15 +11,15 @@ export class FeedbackService {
   constructor(private httpClient: HttpClient) { }
 
   getByFreelancer(freelancerId: string): Observable<Feedback[]> {
-    return this.httpClient.get<Feedback[]>(`api/aggregator/feedback/freelancer/${freelancerId}`);
+    return this.httpClient.get<Feedback[]>(`api/aggregator-service/feedback/freelancer/${freelancerId}`);
   }
 
   getByContract(contractId: string): Observable<FinishedContract> {
-    return this.httpClient.get<FinishedContract>(`api/feedback-service/FinishedContract/${contractId}`);
+    return this.httpClient.get<FinishedContract>(`api/feedback-service/finished-contract/${contractId}`);
   }
 
   create(contractId: string, feedback: Feedback): Observable<any> {
-    return this.httpClient.post<any>(`api/feedback-service/FinishedContract/${contractId}/feedback`, feedback);
+    return this.httpClient.post<any>(`api/feedback-service/finished-contract/${contractId}/feedback`, feedback);
   }
 
 }

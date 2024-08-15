@@ -29,6 +29,10 @@ public class ProposalStatusChangedHandler
         {
             job.NumOfProposals += 1;
         }
+        else if (detail.Status == ProposalStatus.INTERVIEW)
+        {
+            job.CurrentlyInterviewing += 1;
+        }
 
         var proposal = await _proposalRepository.GetById(detail.ProposalId);
         proposal.Status = detail.Status;

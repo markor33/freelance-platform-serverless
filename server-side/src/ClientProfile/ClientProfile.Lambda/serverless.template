@@ -250,5 +250,19 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "ClientProfileTableArn": {
+          "Description": "ARN of the IAM role for Lambda FreelancerProfile Query execution",
+          "Value": {
+              "Fn::GetAtt": [
+                  "ClientProfile",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "ClientProfileTableArn"
+          }
+        }
   }
 }

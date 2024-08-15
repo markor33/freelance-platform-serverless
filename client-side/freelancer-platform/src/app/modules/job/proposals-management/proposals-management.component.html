@@ -4,8 +4,8 @@
         <ng-container matColumnDef="freelancer">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <h3>Freelancer</h3> </th>
             <td mat-cell *matCellDef="let element">
-                <a [routerLink]="['/freelancer/profile', element.freelancer.id]"> 
-                    {{element.freelancer.firstName + ' ' + element.freelancer.lastName}} 
+                <a [routerLink]="['/freelancer/profile', element.freelancer.id]">
+                    {{element.freelancer.firstName + ' ' + element.freelancer.lastName}}
                 </a>
             </td>
         </ng-container>

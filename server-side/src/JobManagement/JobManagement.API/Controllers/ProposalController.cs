@@ -53,7 +53,7 @@ namespace JobManagement.API.Controllers
         }
 
         [HttpPut("job/{id}/[controller]/{proposalId}/payment")]
-        [Authorize(Roles = "CLIENT")]
+        [Authorize(Roles = "Employeer")]
         public async Task<ActionResult> UpdatePayment([FromBody] UpdateProposalPaymentCommand command)
         {
             var commandResult = await _mediator.Send(command);
@@ -63,7 +63,7 @@ namespace JobManagement.API.Controllers
         }
 
         [HttpPut("job/{id}/[controller]/{proposalId}/status/approved")]
-        [Authorize(Roles = "CLIENT")]
+        [Authorize(Roles = "Employeer")]
         public async Task<ActionResult> Approve(Guid id, Guid proposalId)
         {
             var command = new ApproveProposalCommand(id, proposalId);

@@ -19,7 +19,7 @@ export class MyContractsComponent {
   userId: string = '';
 
   contracts: MatTableDataSource<any> = new MatTableDataSource();
-  
+
   @ViewChild(MatSort) sort!: MatSort;
 
   public displayedColumns: string[] = ['jobTitle', 'freelancer', 'status', 'started', 'finished', 'payment', 'feedback'];
@@ -41,12 +41,12 @@ export class MyContractsComponent {
   }
 
   ngOnInit() {
-    if (this.role === 'CLIENT')
+    if (this.role === 'Employeer')
       this.contractService.getByClient(this.userId).subscribe((contracts) => {
         this.contracts.data = contracts;
         console.log(contracts);
       });
-    else if (this.role === 'FREELANCER') {
+    else if (this.role === 'Freelancer') {
       this.displayedColumns.splice(1, 1);
       this.contractService.getByFreelancer().subscribe((contracts) => this.contracts.data = contracts);
     }
