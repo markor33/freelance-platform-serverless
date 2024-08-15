@@ -1,0 +1,55 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+h1 {
+    text-align: center;
+}
+
+.table-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+table {
+    margin-top: 1%;
+    border-collapse: collapse;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+tr.mat-mdc-row:hover {
+    background-color: #E0E0E0;
+    cursor: pointer;
+}
+
+.container button {
+    font-size: large;
+}
+
+.title {
+    font-size: large; 
+    border-right: 1px solid black; 
+}
+
+.proposals, .currentlyInterviewing, .numOfActiveContracts, .numOfFinishedContracts, .status {
+    text-align: center;
+    border-right: 1px solid black; 
+}
+
+.job-actions {
+    text-align: right;
+}
+
+.job-actions button {
+    margin-left: 2%;
+}
+
+mat-paginator {
+    margin-top: 2%;
+}
+
+.done-button {
+    background-color: green;
+}

@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="title">
+        <h2><a [routerLink]="['/freelancer/profile', proposal.freelancerId]">Freelancers</a> proposal</h2>
+    </div>
+    <div class="message">
+        <h3>Message:</h3>
+        {{proposal.text}}
+    </div>
+    <div class="payment">
+        <h3>Payment:</h3>
+        <div>
+            <span class="icon-text-align">
+                <mat-icon>euro</mat-icon>&nbsp;
+                <span>{{proposal.payment.amount + ' ' + proposal.payment.currency + ', ' + enumConverter.paymentTypeToString(proposal.payment.type)}}</span>
+            </span>
+        </div>
+    </div>
+    <div class="answers">
+        <h3>Questions & answers:</h3>
+        <div *ngFor="let answer of proposal.answers; let i = index; let last = last">
+            <b>{{(i + 1) + ') ' + answer.question.text}}?</b><br>
+            <p>{{answer.text}}</p>
+            <mat-divider *ngIf="!last"></mat-divider>
+        </div>
+    </div>
+    <div class="actions">
+        <app-start-contact *ngIf="role === 'Employeer' && proposal.status === 0" [proposal]="proposal" [jobId]="jobId" ></app-start-contact>
+        <app-client-accept *ngIf="role === 'Employeer' && proposal.status === 1" [proposal]="proposal" [jobId]="jobId"></app-client-accept>
+        <div *ngIf="role === 'Freelancer' && proposal.status === 1">
+            <h3>Status: please wait client's approval</h3>
+        </div>
+        <div *ngIf="role === 'Employeer' && proposal.status === 2">
+            <h3>Status: you approved the proposal, please wait freelancer's response</h3>
+        </div>
+        <app-freelancer-accept *ngIf="role === 'Freelancer' && proposal.status === 2" [proposal]="proposal" [jobId]="jobId"></app-freelancer-accept>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    padding: 1%;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.container button {
+    font-size: large;
+}

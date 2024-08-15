@@ -1,0 +1,32 @@
+<div class="container">
+    <h3>Accept proposal:</h3>
+    <mat-expansion-panel (opened)="paymentPanelOpenState = true" (closed)="paymentPanelOpenState = false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Payment</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="payment">
+            <mat-form-field>
+                <mat-label>Amount</mat-label>
+                <input matInput type="number" required [(ngModel)]="payment.amount" name="amount">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Currency</mat-label>
+                <mat-select required [(ngModel)]="payment.currency"  name="currency">
+                    <mat-option selected value="EUR">EUR</mat-option>
+                    <mat-option value="USD">USD</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Type</mat-label>
+                <mat-select required [(ngModel)]="payment.type" name="type">
+                    <mat-option [value]="0">Fixed</mat-option>
+                    <mat-option [value]="1">Hourly</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="editPayment()">Edit</button>
+        </div>
+    </mat-expansion-panel>
+    <div class="accept-button">
+        <button mat-raised-button color="primary" (click)="accept()">Accept</button>
+    </div>
+</div>

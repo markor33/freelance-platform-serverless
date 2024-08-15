@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="title">
+        <h2><a (click)="openJobInfoDialog()">{{jobTitle}}</a> feedback</h2>
+    </div>
+    <div class="client-feedback" *ngIf="finishedContract.clientFeedback">
+        <div class="rating">
+            <h3>Feedback to freelancer</h3>
+            <mat-icon *ngFor="let index of getRange(finishedContract.clientFeedback.rating)" color="primary">grade</mat-icon>
+        </div>
+        <span>
+            {{finishedContract.clientFeedback.text}}
+        </span>
+    </div>
+    <div class="freelancer-feedback" *ngIf="finishedContract.freelancerFeedback">
+        <div class="rating">
+            <h3>Feedback to client</h3>
+            <mat-icon *ngFor="let index of getRange(finishedContract.freelancerFeedback.rating)" color="primary">grade</mat-icon>
+        </div>
+        <span>
+            {{finishedContract.freelancerFeedback.text}}
+        </span>
+    </div>
+    <div class="create-feedback"
+        *ngIf="(role === 'Employeer' && !finishedContract.clientFeedback) || (role === 'Freelancer' && !finishedContract.freelancerFeedback)">
+        <form (ngSubmit)="submitFeedback()">
+            <h3>Give your feedback</h3>
+            <div>
+                <label>Rating:&nbsp;&nbsp;</label>
+                <mat-slider min="1" max="5" step="1" showTickMarks discrete>
+                    <input matSliderThumb name="rating" [(ngModel)]="feedback.rating">
+                </mat-slider>
+            </div>
+            <mat-form-field>
+                <mat-label>Text</mat-label>
+                <textarea matInput [rows]="10" required [(ngModel)]="feedback.text" name="text"></textarea>
+            </mat-form-field>
+            <div class="submit-button">
+                <button mat-raised-button color="primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

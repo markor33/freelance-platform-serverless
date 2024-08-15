@@ -21,6 +21,31 @@ public class FreelancerReadModelRepository : IFreelancerReadModelRepository
         return await _context.LoadAsync<FreelancerViewModel>(id);
     }
 
+    public async Task<List<FreelancerViewModel>> GetByIds(List<Guid> ids)
+    {
+        var batchGet = _context.CreateBatchGet<FreelancerViewModel>();
+        foreach (var id in ids)
+        {
+            batchGet.AddKey(id);
+        }
+        await batchGet.ExecuteAsync();
+        return batchGet.Results;
+    }
+
+    public async Task<List<FreelancerViewModel>> GetByIdsAsync(HashSet<Guid> ids)
+    {
+        var batchGet = _context.CreateBatchGet<FreelancerViewModel>();
+
+        foreach (var id in ids)
+        {
+            batchGet.AddKey(id);
+        }
+
+        await batchGet.ExecuteAsync();
+
+        return batchGet.Results;
+    }
+
     public async Task SaveAsync(FreelancerViewModel freelancer)
     {
         await _context.SaveAsync<FreelancerViewModel>(freelancer);

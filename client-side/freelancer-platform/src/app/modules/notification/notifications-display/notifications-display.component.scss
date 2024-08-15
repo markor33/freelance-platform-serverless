@@ -1,0 +1,37 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.container {
+    background-color: #3949ab;
+    height: 100%;
+}
+
+h2{
+    color: white;
+}
+
+.actions {
+    padding: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.actions button {
+    font-size: large;
+}
+
+.notification {
+    cursor: pointer;
+    padding: 1%;
+}
+
+.notification:hover {
+    border-radius: 2%;
+}
+
+.notification-checked {
+    color: grey;
+}

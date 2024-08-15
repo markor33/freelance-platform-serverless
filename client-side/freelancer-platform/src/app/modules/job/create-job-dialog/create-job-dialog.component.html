@@ -1,0 +1,89 @@
+<div class="container">
+    <h2>Create a job</h2>
+    <form (ngSubmit)="create()">
+        <mat-form-field>
+            <mat-label>Title</mat-label>
+            <input matInput type="text" required [(ngModel)]="createJobCommand.title" name="title">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput [rows]="10" required [(ngModel)]="createJobCommand.description" name="description"></textarea>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Profession</mat-label>
+            <mat-select required [(ngModel)]="createJobCommand.professionId" (selectionChange)="professionSelected($event)" name="profession">
+                <mat-option *ngFor="let profession of professions;" [value]="profession.id">{{profession.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="example-chip-list" appearance="fill">
+            <mat-label>Select skills</mat-label>
+            <mat-select [formControl]="skillsControl" multiple>
+                <mat-select-trigger>
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let skill of skillsControl.value" [removable]="true" (removed)="removeSkill(skill)">
+                    {{ skill.name }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-listbox>
+                </mat-select-trigger>
+                <mat-option *ngFor="let skill of allSkills" [value]="skill">{{skill.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Experience level</mat-label>
+            <mat-select required [(ngModel)]="createJobCommand.experienceLevel" name="experienceLevel">
+                <mat-option [value]="0">Junior</mat-option>
+                <mat-option [value]="1">Medior</mat-option>
+                <mat-option [value]="2">Senior</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Questions</mat-label>
+            <mat-chip-grid #chipGrid aria-label="Enter fruits">
+            <mat-chip-row *ngFor="let question of createJobCommand.questions"
+                            (removed)="removeQuestion(question)"
+                            [editable]="true"
+                            (edited)="editQuestion(question, $event)"
+                            [aria-description]="'press enter to edit ' + question.text">
+                {{question.text}}
+                <button matChipRemove [attr.aria-label]="'remove ' + question.text">
+                <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip-row>
+            <input placeholder="New question..."
+                    [matChipInputFor]="chipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="addOnBlur"
+                    (matChipInputTokenEnd)="addQuestion($event)"/> 
+            </mat-chip-grid>
+        </mat-form-field>
+        <mat-expansion-panel (opened)="paymentPanelOpenState = true" (closed)="paymentPanelOpenState = false">
+            <mat-expansion-panel-header>
+                <mat-panel-title>Payment</mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="payment">
+                <mat-form-field>
+                    <mat-label>Amount</mat-label>
+                    <input matInput type="number" required [(ngModel)]="createJobCommand.payment.amount" name="amount">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Currency</mat-label>
+                    <mat-select required [(ngModel)]="createJobCommand.payment.currency" name="currency">
+                        <mat-option selected value="EUR">EUR</mat-option>
+                        <mat-option value="USD">USD</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Type</mat-label>
+                    <mat-select required [(ngModel)]="createJobCommand.payment.type" name="type">
+                        <mat-option [value]="0">Fixed</mat-option>
+                        <mat-option [value]="1">Hourly</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </mat-expansion-panel>
+        <div class="submit-button">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+        </div>
+    </form>
+</div>

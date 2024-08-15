@@ -1,0 +1,99 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "GrpcJobManagement";
+import "google/protobuf/timestamp.proto";
+
+service Job {
+	rpc GetJobBasicData(GetJobBasicDataRequest) returns (JobDTO);
+	rpc SearchJobs(SearchJobsRequest) returns (SearchJobsResponse);
+}
+
+message SearchJobsResponse {
+	repeated JobDTO jobs = 1;
+}
+
+message SearchJobsRequest {
+	string queryText = 1;
+	SearchJobFilters filters = 2;
+}
+
+message SearchJobFilters {
+	repeated string professions  = 1;
+	repeated int32 experiences = 2;
+	repeated int32 payments = 3;
+}
+
+message GetJobBasicDataRequest {
+	string id = 1;
+}
+
+message JobDTO {
+	string id = 1;
+	string clientId = 2;
+	string title = 3;
+	string description = 4;
+	int32 credits = 5;
+	Payment payment = 6;
+	int32 experienceLevel = 7;
+	int32 numOfProposals = 8;
+	int32 currentlyInterviewing = 9;
+	google.protobuf.Timestamp created = 10;
+}
+
+service Proposal {
+	rpc GetProposalsByJobId(GetProposalsByJobIdRequest) returns (GetProposalsByJobIdResponse);
+}
+
+message GetProposalsByJobIdRequest {
+	string jobId = 1;
+}
+
+message GetProposalsByJobIdResponse {
+	string jobId = 1;
+	repeated ProposalDTO proposals = 2;
+}
+
+message ProposalDTO {
+	string id = 1;
+	string freelancerId = 2;
+	string text = 3;
+	Payment payment = 4;
+	int32 status = 5;
+	google.protobuf.Timestamp created = 6;
+}
+
+service Contract {
+	rpc GetContractsByJob(GetContractsByJobRequest) returns  (ContractsListResponse);
+	rpc GetContractsByClient(GetContractsByClientRequest) returns (ContractsListResponse);
+}
+
+message GetContractsByClientRequest {
+	string clientId = 1;
+}
+
+
+message GetContractsByJobRequest {
+	string jobId = 1;
+}
+
+message ContractsListResponse {
+	repeated ContractDTO contracts = 1;
+}
+
+message ContractDTO {
+	string id = 1;
+	string jobId = 2;
+	string jobTitle = 3;
+	string clientId = 4;
+	string freelancerId = 5;
+	Payment payment = 6;
+	google.protobuf.Timestamp started = 7;
+	google.protobuf.Timestamp finished = 8;
+	int32 status = 9;
+}
+
+message Payment {
+	float amount = 1;
+	string currency = 2;
+	int32 type = 3;
+}

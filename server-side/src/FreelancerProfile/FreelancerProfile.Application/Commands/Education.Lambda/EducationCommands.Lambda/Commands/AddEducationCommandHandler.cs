@@ -1,5 +1,10 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+<<<<<<< HEAD
+using Common.Layer.Headers;
+using Common.Layer.JsonOptions;
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
@@ -48,13 +53,21 @@ public class AddEducationCommandHandler
             };
         }
 
+<<<<<<< HEAD
+        var command = JsonSerializer.Deserialize<AddEducationCommand>(request.Body, JsonOptions.Options);
+=======
         var command = JsonSerializer.Deserialize<AddEducationCommand>(request.Body);
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         command.FreelancerId = Guid.Parse(sub);
 
         var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
+<<<<<<< HEAD
+            context.Logger.LogError($"Validation failed - {validationResult.Errors.Select(x => x.ErrorMessage)}");
+=======
             context.Logger.LogError($"Validation failed - {validationResult.Errors}");
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 
             return new APIGatewayProxyResponse()
             {
@@ -69,7 +82,12 @@ public class AddEducationCommandHandler
         return new APIGatewayProxyResponse()
         {
             StatusCode = statusCode,
+<<<<<<< HEAD
+            Body = JsonSerializer.Serialize(EducationViewModel.FromEducation(result.Value), JsonOptions.Options),
+            Headers = Headers.CORS
+=======
             Body = JsonSerializer.Serialize(EducationViewModel.FromEducation(result.Value))
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 

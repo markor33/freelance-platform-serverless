@@ -1,0 +1,176 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.icon-text-align {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    border: solid 1px;
+    border-radius: 1%;
+    border-color: mat.get-color-from-palette($my-palette);
+    display: flex;
+    flex-direction: row;
+}
+
+.side-content {
+    width: 25%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.general-info {
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 96%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.general-info div {
+    width: 100%;
+    margin-top: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.general-info div span {
+    margin-bottom: 2%;
+}
+
+.profile-picture {
+    width: 65%;
+    height: 50%;
+    border-radius: 50%;
+}
+
+.profile-picture:hover {
+    cursor: pointer;
+} 
+
+.name {
+    margin-top: 1%;
+    font-size: xx-large;
+}
+
+.main-content {
+    width: 75%;
+    height: 100%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-summary {
+    position: relative;
+    padding-left: 5%;
+    padding-right: 5%;
+    min-height: 300px;
+    max-height: 350px;
+    overflow-y: scroll;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.profile-summary .description {
+    position: absolute;
+    white-space: pre-line;
+    padding-bottom: 2%;
+}
+
+.feedbacks {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 5%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.feedbacks a {
+    color: mat.get-color-from-palette($my-palette);
+}
+
+.feedbacks a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 1%;
+}
+
+.about-me {
+    margin-top: 10%;
+    padding-left: 2%;
+    padding-bottom: 10%;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.languages .icon-text-align {
+    font-size: large;
+}
+
+.languages div {
+    margin-top: 2%;
+    margin-left: 5%;
+}
+
+.availability {
+    margin-top: 10%;
+}
+
+.profession {
+    padding-left: 2%;
+    margin-top: 10%;
+}
+
+.profession div {
+    margin-bottom: 2%;
+}
+
+.education {
+    padding: 0% 5% 5% 5%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.education-content div {
+    margin-left: 0%;
+}
+
+mat-divider {
+    margin-top: 2%;
+}
+
+.certification {
+    padding: 0% 5% 5% 5%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+.content-actions {
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+.employment {
+    padding: 0% 5% 5% 5%;
+}
+
+.skill {
+    padding: 0% 5% 5% 5%;
+    border-bottom: solid 1px mat.get-color-from-palette($my-palette);
+}

@@ -1,0 +1,23 @@
+@use '@angular/material' as mat;
+
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+form {
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+    border-top: solid 1px mat.get-color-from-palette($my-palette);
+}
+
+form button {
+    width: 10%;
+}
+
+.submit-buton {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.submit-buton button {
+    font-size: large;
+}

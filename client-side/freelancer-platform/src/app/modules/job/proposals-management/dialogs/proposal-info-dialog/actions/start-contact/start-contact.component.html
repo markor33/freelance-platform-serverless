@@ -1,0 +1,10 @@
+<form (ngSubmit)="sendMessage()">
+    <h3>Contact:</h3>
+    <mat-form-field>
+        <mat-label>Message</mat-label>
+        <textarea matInput [rows]="10" required [(ngModel)]="message" name="message"></textarea>
+    </mat-form-field>
+    <div class="submit-buton">
+        <button mat-raised-button color="primary" type="submit">Send</button>
+    </div>
+</form>
