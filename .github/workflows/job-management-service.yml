@@ -1,0 +1,31 @@
+name: job-management-service
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - server-side/src/JobManagement/**
+            - .github/workflows/job-management-service.yml
+
+jobs:
+    build-test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: aws-actions/setup-sam@v1
+
+            - name: Build
+              run: |
+                cd server-side
+                dotnet restore "FreelancePlatform.sln"
+                cd src/FreelancerProfile/FreelancerProfile.IntegrationTests
+                dotnet build --no-restore
+
+            - name: Test
+              run: |
+                cd server-side
+                dotnet restore "FreelancePlatform.sln"
+                cd src/FreelancerProfile/FreelancerProfile.IntegrationTests
+                dotnet build --no-restore
+                dotnet test --no-build -v=normal
