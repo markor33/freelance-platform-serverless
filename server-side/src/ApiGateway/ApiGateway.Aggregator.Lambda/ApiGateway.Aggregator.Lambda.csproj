@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ClientProfile\ClientProfile.Persistence\ClientProfile.Persistence.csproj" />
     <ProjectReference Include="..\..\Common\Common\Common.Layer.csproj" />
+    <ProjectReference Include="..\..\FeedbackManagement\FeedbackManagement.Persistence\FeedbackManagement.Persistence.csproj" />
     <ProjectReference Include="..\..\FreelancerProfile\FreelancerProfile.Persistence\ReadModelStore\FreelancerProfile.ReadModelStore.csproj" />
     <ProjectReference Include="..\..\JobManagement\JobManagement.Queries\ReadModelStore\JobManagement.ReadModelStore.csproj" />
     <ProjectReference Include="..\..\RealTime\RealTime.Chat\RealTime.Chat.Persistence\RealTime.Chat.Persistence.csproj" />

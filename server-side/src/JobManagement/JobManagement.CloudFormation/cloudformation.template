@@ -74,6 +74,31 @@
                     "Fn::ImportValue" : "FreelancerRestApiId"
                 }
             }
+        },
+
+        "ContractResource"        : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "JobResource"
+                },
+                "PathPart" : "contract",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
+        },
+        "ContractByFreelancerResource"        : {
+            "Type" : "AWS::ApiGateway::Resource",
+            "Properties" : {
+                "ParentId" : {
+                    "Ref" : "ContractResource"
+                },
+                "PathPart" : "freelancer",
+                "RestApiId" : {
+                    "Fn::ImportValue" : "FreelancerRestApiId"
+                }
+            }
         }
 
     },
@@ -124,6 +149,14 @@
             },
             "Export" : {
                 "Name" : "ProposalByIdResource"
+            }
+        },
+        "ContractByFreelancerResource"    : {
+            "Value" : {
+                "Ref" : "ContractByFreelancerResource"
+            },
+            "Export" : {
+                "Name" : "ContractByFreelancerResource"
             }
         }
     }

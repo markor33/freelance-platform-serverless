@@ -47,6 +47,7 @@ export class ChatComponent {
   }
 
   openProposalDialog() {
+    console.log(this.activeChat);
     this.dialog.open(ProposalInfoDialogComponent, {
       width: '50%',
       height: '80%',
@@ -59,7 +60,6 @@ export class ChatComponent {
   }
 
   newMessageReceived(message: Message | null) {
-    console.log(message)
     if (message === null)
       return;
     if (this.activeChat?.id === message.chatId)

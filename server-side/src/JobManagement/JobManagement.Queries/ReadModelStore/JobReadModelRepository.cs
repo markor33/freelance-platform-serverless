@@ -24,6 +24,17 @@ public class JobReadModelRepository : IJobReadModelRepository
         return allJobs;
     }
 
+    public async Task<List<JobViewModel>> GetByIdsAsync(HashSet<Guid> ids)
+    {
+        var batchGet = _context.CreateBatchGet<JobViewModel>();
+        foreach (var id in ids)
+        {
+            batchGet.AddKey(id);
+        }
+        await batchGet.ExecuteAsync();
+        return batchGet.Results;
+    }
+
     public async Task<List<JobViewModel>> GetByClient(Guid clientId)
     {
         var queryConditions = new List<ScanCondition>

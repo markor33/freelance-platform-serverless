@@ -53,6 +53,18 @@
           }
         }
       },
+      "FeedbackResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "AggregatorServiceResource"
+          },
+          "PathPart": "feedback",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
 
       "AggregatorLambdaRole": {
         "Type": "AWS::IAM::Role",
@@ -106,7 +118,8 @@
                       "dynamodb:GetItem",
                       "dynamodb:Query",
                       "dynamodb:Scan",
-                      "dynamodb:DescribeTable"
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchGetItem"
                     ],
                     "Resource": {
                       "Fn::ImportValue": "JobReadModelStoreArn"
@@ -170,6 +183,48 @@
                             ],
                             "Resource" : {
                                 "Fn::ImportValue": "ClientProfileTableArn"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "PolicyName" : "DynamoDBAccessPolicyContract",
+                "PolicyDocument" : {
+                    "Version" : "2012-10-17",
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Action" : [
+                                "dynamodb:GetItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:BatchGetItem"
+                            ],
+                            "Resource" : {
+                                "Fn::ImportValue": "ContractReadModelStoreArn"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "PolicyName" : "DynamoDBAccessPolicyFeedback",
+                "PolicyDocument" : {
+                    "Version" : "2012-10-17",
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Action" : [
+                                "dynamodb:GetItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:BatchGetItem"
+                            ],
+                            "Resource" : {
+                                "Fn::ImportValue": "FeedbackStore"
                             }
                         }
                     ]
@@ -312,6 +367,297 @@
         "SourceArn": {
           "Fn::Sub": [
             "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/aggregator-service/chat",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+      "ContractResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "AggregatorServiceResource"
+          },
+          "PathPart": "contract",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "ContractClientResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ContractResource"
+          },
+          "PathPart": "client",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "ContractClientByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ContractClientResource"
+          },
+          "PathPart": "{clientId}",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+
+      "GetContractsByClient" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "aggregator-GetContractsByClient",
+        "Handler": "ApiGateway.Aggregator.Lambda::ApiGateway.Aggregator.Lambda.Handlers.GetContractsByClientHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["AggregatorLambdaRole", "Arn"] },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+      "GetContractsByClientMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+            "Ref": "ContractClientByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.clientId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetContractsByClient.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.clientId": "method.request.path.clientId"
+          }
+        }
+      }
+    },
+      "GetContractsByClientLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetContractsByClient"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/aggregator-service/contract/client/{clientId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+      "ContractJobResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ContractResource"
+          },
+          "PathPart": "job",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "ContractJobByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "ContractJobResource"
+          },
+          "PathPart": "{jobId}",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+
+      "GetContractsByJob" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "aggregator-GetContractsByJob",
+        "Handler": "ApiGateway.Aggregator.Lambda::ApiGateway.Aggregator.Lambda.Handlers.GetContractByJobHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["AggregatorLambdaRole", "Arn"] },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+      "GetContractsByJobMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+            "Ref": "ContractJobByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.jobId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetContractsByJob.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.clientId": "method.request.path.jobId"
+          }
+        }
+      }
+    },
+      "GetContractsByJobLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetContractsByJob"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/aggregator-service/contract/job/{jobId}",
+            {
+              "ApiId": {
+                "Fn::ImportValue": "FreelancerRestApiId"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "FeedbackByFreelancerResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "FeedbackResource"
+          },
+          "PathPart": "freelancer",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+      "FeedbackByFreelancerByIdResource": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Ref": "FeedbackByFreelancerResource"
+          },
+          "PathPart": "{freelancerId}",
+          "RestApiId": {
+            "Fn::ImportValue": "FreelancerRestApiId"
+          }
+        }
+      },
+
+    "GetFeedbackByFreelancer" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "aggregator-GetFeedbackByFreelancer",
+        "Handler": "ApiGateway.Aggregator.Lambda::ApiGateway.Aggregator.Lambda.Handlers.GetFeedbackByFreelancerHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["AggregatorLambdaRole", "Arn"] },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11"
+        ]
+      }
+    },
+      "GetFeedbackByFreelancerMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "CognitoAuthorizerId"
+        },
+        "AuthorizationScopes": [ "FRS/rw" ],
+        "HttpMethod": "GET",
+        "ResourceId": {
+            "Ref": "FeedbackByFreelancerByIdResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "FreelancerRestApiId"
+        },
+        "RequestParameters": {
+          "method.request.path.freelancerId": true
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetFeedbackByFreelancer.Arn}/invocations"
+          },
+          "RequestParameters": {
+            "integration.request.path.freelancerId": "method.request.path.freelancerId"
+          }
+        }
+      }
+    },
+      "GetFeedbackByFreelancerLambdaApiGatewayInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetFeedbackByFreelancer"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/aggregator-service/feedback/freelancer/{freelancerId}",
             {
               "ApiId": {
                 "Fn::ImportValue": "FreelancerRestApiId"

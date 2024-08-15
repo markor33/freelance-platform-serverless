@@ -20,7 +20,7 @@ public class Chat
     public Chat(RealTime.Chat.Models.Chat chat, FreelancerViewModel freelancer, Client client, JobViewModel job)
     {
         Id = chat.Id;
-        JobId = chat.Id;
+        JobId = chat.JobId;
         JobTitle = job.Title;
         ProposalId = chat.ProposalId;
         ClientId = chat.Id;

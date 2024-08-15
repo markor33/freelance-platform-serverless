@@ -34,6 +34,7 @@ export class ProposalsManagementComponent {
     private route: ActivatedRoute,
     public enumConverter: EnumConverter) {
       this.jobId = this.route.snapshot.paramMap.get('id') as string;
+      console.log(this.jobId)
   }
 
   ngAfterViewInit() {
@@ -44,7 +45,7 @@ export class ProposalsManagementComponent {
     this.jobService.get(this.jobId).subscribe((job) => this.job = job);
     this.proposalService.getByJobId(this.jobId).subscribe((proposals) => this.proposals.data = proposals);
   }
-    
+
   openJobInfoDialog() {
     JobInfoDialogComponent.open(this.dialog, this.job.id);
   }

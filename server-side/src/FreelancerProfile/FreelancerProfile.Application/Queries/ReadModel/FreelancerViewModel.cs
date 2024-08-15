@@ -12,6 +12,7 @@ public class FreelancerViewModel
     public Guid Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string FullName { get => FirstName + " " + LastName; }
     public Contact Contact { get; set; }
     public bool IsProfilePublic { get; set; }
     public DateTime Joined { get; set; }

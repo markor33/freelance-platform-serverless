@@ -18,8 +18,8 @@
             { "AttributeName": "Id", "KeyType": "HASH" }
           ],
           "ProvisionedThroughput": {
-            "ReadCapacityUnits": 5,
-            "WriteCapacityUnits": 5
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
           }
         }
       },
@@ -37,11 +37,35 @@
             { "AttributeName": "Id", "KeyType": "HASH" }
           ],
           "ProvisionedThroughput": {
-            "ReadCapacityUnits": 5,
-            "WriteCapacityUnits": 5
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
           }
         }
       },
+        "ContractReadModelStore": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "ContractReadModelStore",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "Id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "JobId",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                { "AttributeName": "Id", "KeyType": "HASH" },
+                {  "AttributeName": "JobId", "KeyType": "RANGE"  }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              }
+            }
+          },
         "JobLambdaQueryRole": {
         "Type": "AWS::IAM::Role",
         "Properties": {
@@ -101,6 +125,29 @@
                     "Resource": {
                       "Fn::GetAtt": [
                         "ProposalReadModelStore",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyContract",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "ContractReadModelStore",
                         "Arn"
                       ]
                     }
@@ -184,6 +231,18 @@
           },
           "Export": {
             "Name": "ProposalReadModelStoreArn"
+          }
+        },
+        "ContractReadModelStoreArn": {
+          "Description": "ARN of the FP DynamoDB Read Model Store",
+          "Value": {
+              "Fn::GetAtt": [
+                  "ContractReadModelStore",
+                  "Arn"
+              ]
+          },
+          "Export": {
+            "Name": "ContractReadModelStoreArn"
           }
         }
 	}
