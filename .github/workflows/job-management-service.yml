@@ -13,14 +13,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: aws-actions/setup-sam@v1
 
             - name: Build
               run: |
                 cd server-side
                 dotnet restore "FreelancePlatform.sln"
-                cd src/JobManagement
-                dotnet build --no-restore
+                cd src/JobManagement/
+                for project in $(find . -name "*.csproj"); do
+                    echo "Building $project"
+                    dotnet build --no-restore "$project"
+                done
 
             - name: Test
               run: |
