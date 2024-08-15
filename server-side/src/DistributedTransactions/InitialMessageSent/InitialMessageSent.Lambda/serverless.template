@@ -1,0 +1,74 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+	"InitialMessageSentRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "InitialMessageSentRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "chat-service"
+          ],
+          "detail-type": [
+            "InitialMessageSentEvent"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "InitialMessageSentHandler",
+                "Arn"
+              ]
+            },
+            "Id": "InitialMessageSentTarget"
+          }
+        ]
+      }
+    },
+    "PermissionInitialMessageSent": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "InitialMessageSentHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "InitialMessageSentRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "InitialMessageSentHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "dt-InitialMessageSent-InitialMessageSentHandler",
+        "Handler": "InitialMessageSent.Lambda::InitialMessageSent.Lambda.Handlers.InitialMessageSentCommandHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::ImportValue": "JobLambdaCommandRoleArn"
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:11",
+            "arn:aws:lambda:eu-central-1:891376935045:layer:JobManagementDomainLayer:2"
+        ]
+      }
+    }
+  }
+}

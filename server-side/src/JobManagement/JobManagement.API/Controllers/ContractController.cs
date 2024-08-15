@@ -15,25 +15,23 @@ namespace JobManagement.API.Controllers
 
         private readonly IMediator _mediator;
         private readonly IIdentityService _identityService;
-        private readonly IContractQueries _contractQueries;
 
-        public ContractController(IMediator mediator, IIdentityService identityService, IContractQueries contractQueries)
+        public ContractController(IMediator mediator, IIdentityService identityService)
         {
             _mediator = mediator;
             _identityService = identityService;
-            _contractQueries = contractQueries;
         }
 
-        [HttpGet("[controller]/freelancer")]
-        [Authorize(Roles = "FREELANCER")]
-        public async Task<ActionResult<List<ContractViewModel>>> GetByFreelancer()
-        {
-            var freelancerId = _identityService.GetDomainUserId();
-            return await _contractQueries.GetByFreelancer(freelancerId);
-        }
+        //[HttpGet("[controller]/freelancer")]
+        //[Authorize(Roles = "Freelancer")]
+        //public async Task<ActionResult<List<ContractViewModel>>> GetByFreelancer()
+        //{
+        //    var freelancerId = _identityService.GetDomainUserId();
+        //    return await _contractQueries.GetByFreelancer(freelancerId);
+        //}
 
         [HttpPost("job/{id}/[controller]/proposal/{proposalId}")]
-        [Authorize(Roles = "FREELANCER")]
+        [Authorize(Roles = "Freelancer")]
         public async Task<ActionResult> Create(Guid id, Guid proposalId)
         {
             var command = new MakeContractCommand(id, proposalId);
@@ -44,7 +42,7 @@ namespace JobManagement.API.Controllers
         }
 
         [HttpPut("job/{id}/[controller]/{contractId}/status/finished")]
-        [Authorize(Roles = "CLIENT")]
+        [Authorize(Roles = "Employeer")]
         public async Task<ActionResult> Finish(Guid id, Guid contractId)
         {
             var command = new FinishContractCommand(id, contractId);
@@ -55,7 +53,7 @@ namespace JobManagement.API.Controllers
         }
 
         [HttpPut("job/{id}/[controller]/{contractId}/status/terminated")]
-        [Authorize(Roles = "CLIENT")]
+        [Authorize(Roles = "Employeer")]
         public async Task<ActionResult> Terminate(Guid id, Guid contractId)
         {
             var command = new TerminateContractCommand(id, contractId);

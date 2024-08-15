@@ -22,6 +22,7 @@ public class ProposalCreatedHandler
     public async Task FunctionHandler(EventBusEvent<ProposalCreated> @event, ILambdaContext context)
     {
         var job = await _jobRepository.GetByIdAsync(@event.Detail.AggregateId);
+
         var proposal = new ProposalViewModel(@event.Detail.AggregateId, @event.Detail.Proposal, job.Questions.ToDictionary(x => x.Id));
 
         await _proposalRepository.SaveAsync(proposal);

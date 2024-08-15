@@ -57,7 +57,7 @@ export class HomeComponent {
 
       });
 
-      this.notificationService.newNotificationReceivedObserver.subscribe((res) => this.showNewNotificationDot = res);
+      // this.notificationService.newNotificationReceivedObserver.subscribe((res) => this.showNewNotificationDot = res);
 
       this.chatService.newMessageObserver.subscribe((res) => {
         if (res === null) this.showNewChatMessageDot = false;

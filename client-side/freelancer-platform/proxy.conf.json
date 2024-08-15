@@ -5,7 +5,7 @@
         "changeOrigin": true
     },
     "/local/api/*": {
-      "target": "http://localhost:32770",
+      "target": "http://localhost:32768",
       "secure": false,
       "pathRewrite": {
         "^/local/api": "/api"

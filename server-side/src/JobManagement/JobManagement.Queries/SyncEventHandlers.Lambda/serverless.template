@@ -64,6 +64,27 @@
                   }
                 ]
               }
+            },
+            {
+              "PolicyName": "DynamoDBAccessPolicyContract",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": { "Fn::ImportValue": "ContractReadModelStoreArn" }
+                  }
+                ]
+              }
             }
           ]
         }
@@ -379,6 +400,201 @@
       "Properties": {
         "FunctionName": "jms-queries-sync-ProposalStatusChangedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProposalStatusChangedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "ProposalPaymentChangedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ProposalPaymentChangedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "ProposalPaymentChanged"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ProposalPaymentChangedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "ProposalPaymentChangedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionProposalPaymentChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProposalPaymentChangedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ProposalPaymentChangedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ProposalPaymentChangedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-ProposalPaymentChanged",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProposalPaymentChangedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "ContractCreatedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ContractCreatedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "ContractCreated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ContractCreatedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "ContractCreatedTarget"
+          }
+        ]
+      }
+    },
+    "ContractCreatedChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ContractCreatedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ContractCreatedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ContractCreatedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-ContractCreated",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ContractCreatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "ContractStatusChangedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ContractStatusChangedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "ContractStatusChanged"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ContractStatusChangedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "ContractStatusChangedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionContractStatusChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ContractStatusChangedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ContractStatusChangedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ContractStatusChangedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-ContractStatusChanged",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ContractStatusChangedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
         "Description": "Default function",

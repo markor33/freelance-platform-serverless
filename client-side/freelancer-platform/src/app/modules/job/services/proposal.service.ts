@@ -50,11 +50,11 @@ export class ProposalService {
   }
 
   editPayment(editProposalPaymentCommand: EditProposalPaymentCommand): Observable<any> {
-    return this.httpClient.put<any>(`api/job/job/${editProposalPaymentCommand.jobId}/proposal/${editProposalPaymentCommand.proposalId}/payment`, editProposalPaymentCommand);
+    return this.httpClient.put<any>(`local/api/job/${editProposalPaymentCommand.jobId}/proposal/${editProposalPaymentCommand.proposalId}/payment`, editProposalPaymentCommand);
   }
 
   clientApprove(jobId: string, proposalId: string): Observable<any> {
-    return this.httpClient.put<any>(`api/job/job/${jobId}/proposal/${proposalId}/status/approved`, {});
+    return this.httpClient.put<any>(`local/api/job/${jobId}/proposal/${proposalId}/status/approved`, {});
   }
 
   isConfirmed(id: string, jobId: string): void {
