@@ -19,13 +19,13 @@ jobs:
               run: |
                 cd server-side
                 dotnet restore "FreelancePlatform.sln"
-                cd src/FreelancerProfile/FreelancerProfile.IntegrationTests
+                cd src/JobManagement
                 dotnet build --no-restore
 
             - name: Test
               run: |
                 cd server-side
                 dotnet restore "FreelancePlatform.sln"
-                cd src/FreelancerProfile/FreelancerProfile.IntegrationTests
+                cd src/JobManagement/JobManagement.IntegrationTests
                 dotnet build --no-restore
                 dotnet test --no-build -v=normal
