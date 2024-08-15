@@ -4,10 +4,18 @@
   "Description": "Starting template for an AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.4.0.0).",
   "Parameters": {},
   "Resources": {
+<<<<<<< HEAD
     "CreateFreelancer": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "FunctionName": "fps-commands-CreateFreelancer",
+=======
+
+    "CreateFreelancer": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "CreateFreelancer",
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.CreateFreelancerCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -76,7 +84,11 @@
     "SetupProfile": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
+<<<<<<< HEAD
         "FunctionName": "fps-commands-SetupProfile",
+=======
+        "FunctionName": "SetupProfile",
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.SetupProfileCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -103,7 +115,10 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "PUT",
         "ResourceId": {
           "Fn::ImportValue": "FreelancerByIdResource"
@@ -150,7 +165,11 @@
     "UpdateProfileSummary": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
+<<<<<<< HEAD
         "FunctionName": "fps-commands-UpdateProfileSummary",
+=======
+        "FunctionName": "UpdateProfileSummary",
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.UpdateProfileSummaryCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -189,7 +208,10 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdProfileSummaryResource"
@@ -236,7 +258,11 @@
     "AddSkill": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
+<<<<<<< HEAD
         "FunctionName": "fps-commands-AddSkill",
+=======
+        "FunctionName": "AddSkill",
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "Handler": "FreelancerCommands.Lambda::FreelancerCommands.Lambda.Commands.AddSkillCommandHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -275,7 +301,10 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdSkillResource"
@@ -382,7 +411,10 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
+<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdProfilePictureResource"

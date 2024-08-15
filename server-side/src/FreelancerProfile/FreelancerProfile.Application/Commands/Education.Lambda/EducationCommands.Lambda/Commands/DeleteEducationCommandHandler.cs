@@ -1,6 +1,9 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+<<<<<<< HEAD
 using Common.Layer.Headers;
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.Repositories;
@@ -65,8 +68,12 @@ public class DeleteEducationCommandHandler
 
         return new APIGatewayProxyResponse()
         {
+<<<<<<< HEAD
             StatusCode = statusCode,
             Headers = Headers.CORS
+=======
+            StatusCode = statusCode
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 

@@ -1,7 +1,10 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+<<<<<<< HEAD
 using Common.Layer.Headers;
 using Common.Layer.JsonOptions;
+=======
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
@@ -48,7 +51,11 @@ public class UpdateEducationCommandHandler
             };
         }
 
+<<<<<<< HEAD
         var command = JsonSerializer.Deserialize<UpdateEducationCommand>(request.Body, JsonOptions.Options);
+=======
+        var command = JsonSerializer.Deserialize<UpdateEducationCommand>(request.Body);
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         command.FreelancerId = Guid.Parse(sub);
 
         var validationResult = _validator.Validate(command);
@@ -68,8 +75,12 @@ public class UpdateEducationCommandHandler
 
         return new APIGatewayProxyResponse()
         {
+<<<<<<< HEAD
             StatusCode = statusCode,
             Headers = Headers.CORS
+=======
+            StatusCode = statusCode
+>>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 
