@@ -17,7 +17,6 @@ public class DependecyFixture
     public static readonly Guid BlankJobId = Guid.NewGuid();
     public static readonly Guid JobId = Guid.NewGuid();
     public static readonly Guid ProposalId = Guid.NewGuid();
-    public static Guid ContractId = Guid.NewGuid();
     public static readonly Guid FreelancerId = Guid.NewGuid();
     public static readonly Guid ClientId = Guid.NewGuid();
     public static readonly Guid ProfessionId = Guid.NewGuid();
@@ -37,14 +36,9 @@ public class DependecyFixture
     public static Job GetTestJob()
     {
         var job = Job.Create(ClientId, "Title", "Desc", ExperienceLevel.JUNIOR, new Payment(100, "USD", PaymentType.FIXED_RATE), GetTestProfession(), [], []);
-        
+
         var proposal = new Proposal(ProposalId, FreelancerId, "Text", new Payment(100, "USD", PaymentType.FIXED_RATE), ProposalStatus.CLIENT_APPROVED, [], DateTime.UtcNow);
         job.AddProposal(proposal);
-
-        var proposal1 = new Proposal(Guid.NewGuid(), Guid.NewGuid(), "Text", new Payment(100, "USD", PaymentType.FIXED_RATE), ProposalStatus.CLIENT_APPROVED, [], DateTime.UtcNow);
-        job.AddProposal(proposal1);
-        var res = job.MakeContract(proposal1.Id);
-        ContractId = res.Value.Id;
 
         return job;
     }
@@ -58,5 +52,15 @@ public class DependecyFixture
 
     public static Profession GetTestProfession()
         => new Profession(ProfessionId, "name", "desc", new List<Skill>());
+
+    public Guid CreateContract()
+    {
+        var job = _jobRepository.Object.GetByIdAsync(JobId).Result;
+        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), "Text", new Payment(100, "USD", PaymentType.FIXED_RATE), ProposalStatus.CLIENT_APPROVED, [], DateTime.UtcNow);
+        job.AddProposal(proposal);
+        var res = job.MakeContract(proposal.Id);
+
+        return res.Value.Id;
+    }
 
 }
