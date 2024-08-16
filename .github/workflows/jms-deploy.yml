@@ -1,0 +1,28 @@
+name: jms-deploy
+
+on:
+    workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI }}
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v3
+
+            - name: Log in to Amazon ECR
+              id: ecr-login
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build, tag, and push Docker image
+              env:
+                IMAGE_TAG: ${{ github.sha }}
+              run: |
+               cd server-side/src/JobManagement/JobManagement.API
+               docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
+               docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
