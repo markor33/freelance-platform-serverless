@@ -1,4 +1,4 @@
-name: job-management-service
+name: jms-build-test
 
 on:
     push:
@@ -6,7 +6,7 @@ on:
             - main
         paths:
             - server-side/src/JobManagement/**
-            - .github/workflows/job-management-service.yml
+            - .github/workflows/jms-build-test.yml
     workflow_dispatch:
 
 jobs:
