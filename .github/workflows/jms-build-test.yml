@@ -32,3 +32,9 @@ jobs:
                 cd src/JobManagement/JobManagement.IntegrationTests
                 dotnet build --no-restore
                 dotnet test --no-build -v=normal
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v2.3.0
+              env:
+                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            
