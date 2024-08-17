@@ -5,7 +5,7 @@
         "changeOrigin": true
     },
     "/local/api/*": {
-      "target": "http://localhost:32768",
+      "target": "http://18.192.57.67:8080",
       "secure": false,
       "pathRewrite": {
         "^/local/api": "/api"
