@@ -40,7 +40,7 @@ jobs:
               with:
                 task-definition: server-side/src/JobManagement/JobManagement.API/task-definition.json
                 container-name: jms-commands
-                image: $ECR_REPOSITORY_URI:$IMAGE_TAG
+                image: ${{ env.ECR_REPOSITORY_URI }} ':' ${{ github.sha }}
 
             - name: Deploy to Amazon ECS service
               uses: aws-actions/amazon-ecs-deploy-task-definition@v2
