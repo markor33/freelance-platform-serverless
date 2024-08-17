@@ -10,16 +10,16 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["./src/JobManagement/JobManagement.API/JobManagement.API.csproj", "JobManagement/JobManagement.API/"]
-COPY ["./src/JobManagement/JobManagement.Application/JobManagement.Application.Commands.csproj", "JobManagement/JobManagement.Application/"]
-COPY ["./src/JobManagement/JobManagement.Domain/JobManagement.Domain.csproj", "JobManagement/JobManagement.Domain/"]
-COPY ["./src/JobManagement/JobManagement.Infrastructure/JobManagement.Infrastructure.csproj", "JobManagement/JobManagement.Infrastructure/"]
+COPY ["./JobManagement.API/JobManagement.API.csproj", "JobManagement.API/"]
+COPY ["./JobManagement.Application/JobManagement.Application.Commands.csproj", "JobManagement.Application/"]
+COPY ["./JobManagement.Domain/JobManagement.Domain.csproj", "JobManagement.Domain/"]
+COPY ["./JobManagement.Infrastructure/JobManagement.Infrastructure.csproj", "JobManagement.Infrastructure/"]
 
-RUN dotnet restore "JobManagement.API.csproj"
+RUN dotnet restore "JobManagement.API/JobManagement.API.csproj"
 
 COPY . .
 
-WORKDIR "/src/JobManagement/JobManagement.API/"
+WORKDIR "/src/JobManagement.API/"
 
 RUN dotnet build "JobManagement.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

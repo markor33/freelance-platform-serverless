@@ -1,17 +1,11 @@
-using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.EventBridge;
-using Amazon.Runtime;
-using JobManagement.API.GrpcServices;
 using JobManagement.API.Security;
 using JobManagement.Application;
 using JobManagement.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -30,6 +30,6 @@ jobs:
               env:
                 IMAGE_TAG: ${{ github.sha }}
               run: |
-               cd server-side/src/JobManagement/JobManagement.API
+               cd server-side/src/JobManagement
                docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
                docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
