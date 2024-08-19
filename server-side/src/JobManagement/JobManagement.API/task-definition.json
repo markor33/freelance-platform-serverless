@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "jms-commands",
-      "image": "891376935045.dkr.ecr.eu-central-1.amazonaws.com/freelance-platform:a91f039f032d9e79dec86954642caee05a728bcd",
+      "image": "891376935045.dkr.ecr.eu-central-1.amazonaws.com/freelance-platform:99f00f9eae70d77eef92759d3c2c373d08628b73",
       "cpu": 0,
       "portMappings": [
         {
@@ -16,40 +16,12 @@
       ],
       "essential": true,
       "environment": [],
-      "environmentFiles": [],
       "mountPoints": [],
       "volumesFrom": [],
-      "ulimits": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/JobManagementService",
-          "mode": "non-blocking",
-          "awslogs-create-group": "true",
-          "max-buffer-size": "25m",
-          "awslogs-region": "eu-central-1",
-          "awslogs-stream-prefix": "ecs"
-        },
-        "secretOptions": []
-      },
-      "systemControls": []
-    },
-    {
-      "name": "aws-otel-collector",
-      "image": "public.ecr.aws/aws-observability/aws-otel-collector:v0.40.0",
-      "cpu": 0,
-      "portMappings": [],
-      "essential": true,
-      "command": [
-        "--config=/etc/ecs/ecs-cloudwatch-xray.yaml"
-      ],
-      "environment": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/ecs-aws-otel-sidecar-collector",
           "mode": "non-blocking",
           "awslogs-create-group": "true",
           "max-buffer-size": "25m",
@@ -67,8 +39,8 @@
   "requiresCompatibilities": [
     "FARGATE"
   ],
-  "cpu": "1024",
-  "memory": "3072",
+  "cpu": "256",
+  "memory": "2048",
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
