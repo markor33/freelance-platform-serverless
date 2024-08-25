@@ -21,6 +21,9 @@
               }
             ]
           },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            ],
           "Policies": [
             {
               "PolicyName": "DynamoDBAccessPolicy",
@@ -95,7 +98,7 @@
     "FreelancerCreatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "FreelancerCreatedHandler",
+        "FunctionName": "fps-queries-sync-FreelancerCreatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.FreelancerCreatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -162,7 +165,7 @@
     "ProfileSetupCompletedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "ProfileSetupCompletedHandler",
+        "FunctionName": "fps-queries-sync-ProfileSetupCompletedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProfileSetupCompletedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -229,7 +232,7 @@
     "ProfileSummaryUpdatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "ProfileSummaryUpdatedHandler",
+        "FunctionName": "fps-queries-sync-ProfileSummaryUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProfileSummaryUpdatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -296,7 +299,7 @@
     "SkillsUpdatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "SkillsUpdatedHandler",
+        "FunctionName": "fps-queries-sync-SkillsUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.SkillsUpdatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -363,7 +366,7 @@
     "ProfilePictureChangedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "ProfilePictureChangedHandler",
+        "FunctionName": "fps-queries-sync-ProfilePictureChangedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.ProfilePictureChangedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -430,7 +433,7 @@
     "EducationAddedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EducationAddedHandler",
+        "FunctionName": "fps-queries-sync-EducationAddedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationAddedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -497,7 +500,7 @@
     "EducationUpdatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EducationUpdatedHandler",
+        "FunctionName": "fps-queries-sync-EducationUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationUpdatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -564,7 +567,7 @@
     "EducationDeletedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EducationDeletedHandler",
+        "FunctionName": "fps-queries-sync-EducationDeletedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EducationDeletedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -631,7 +634,7 @@
     "EmploymentAddedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EmploymentAddedHandler",
+        "FunctionName": "fps-queries-sync-EmploymentAddedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EmploymentAddedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -698,7 +701,7 @@
     "EmploymentUpdatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EmploymentUpdatedHandler",
+        "FunctionName": "fps-queries-sync-EmploymentUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EmploymentUpdatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -765,7 +768,7 @@
     "EmploymentDeletedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-EmploymentDeletedHandler",
+        "FunctionName": "fps-queries-sync-EmploymentDeletedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.EmploymentDeletedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -832,7 +835,7 @@
     "CertificationAddedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-CertificationAddedHandler",
+        "FunctionName": "fps-queries-sync-CertificationAddedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationAddedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -899,7 +902,7 @@
     "CertificationUpdatedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-CertificationUpdatedHandler",
+        "FunctionName": "fps-queries-sync-CertificationUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationUpdatedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -966,7 +969,7 @@
     "CertificationDeletedHandler" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "fps-sync-CertificationDeletedHandler",
+        "FunctionName": "fps-queries-sync-CertificationDeletedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.CertificationDeletedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",

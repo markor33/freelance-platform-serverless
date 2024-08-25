@@ -14,7 +14,9 @@
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.305.6" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ClientProfile\ClientProfile.Persistence\ClientProfile.Persistence.csproj" />
     <ProjectReference Include="..\..\Common\Common\Common.Layer.csproj" />
     <ProjectReference Include="..\..\EventBus\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\..\FreelancerProfile\FreelancerProfile.Persistence\WriteModel\EventStore.csproj" />
   </ItemGroup>
 </Project>

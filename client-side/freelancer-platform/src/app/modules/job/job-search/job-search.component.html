@@ -37,7 +37,7 @@
     </div>
     <div class="search-container">
         <div class="search">
-            <input [(ngModel)]="queryText" type="text" placeholder="Search for jobs">
+            <input [(ngModel)]="jobSearchParams.fullTextSearch" type="text" placeholder="Search for jobs">
             <div class="search-button" (click)="search()">
                 <mat-icon>search</mat-icon>
             </div>
@@ -83,22 +83,16 @@
             <mat-divider></mat-divider>
             <div class="proposals">
                 <span><b>Proposals:</b> {{job.numOfProposals}}</span>
-                <span><b>Interviewing:</b> {{job.currentlyInterviewing}}</span>
+                <span><b>Interviewing:</b> {{job.numOfCurrInterviews}}</span>
             </div>
             <mat-divider></mat-divider>
-            <!--<div class="client">
+            <div class="client">
                 <div class="rating">
-                    <span><b>{{job.clientName}}</b></span>
                     <div>
                         <mat-icon color="primary" *ngFor="let index of getRange(job.clientAverageRating)">grade</mat-icon>
                     </div>
                 </div>
-                <mat-divider vertical style="height:20px"></mat-divider>
-                <span class="icon-text-align">
-                    <mat-icon>location_on</mat-icon>&nbsp;
-                    {{job.clientCity + ', ' + job.clientCountry}}
-                </span>
-            </div>-->
+            </div>
         </div>
     </div>
 </div>

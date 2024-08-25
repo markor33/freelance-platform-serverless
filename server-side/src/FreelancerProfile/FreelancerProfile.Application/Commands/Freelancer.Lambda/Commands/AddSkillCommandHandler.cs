@@ -1,10 +1,7 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-<<<<<<< HEAD
 using Common.Layer.Headers;
 using Common.Layer.JsonOptions;
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
 using FreelancerProfile.Domain.Repositories;
@@ -30,7 +27,7 @@ public class AddSkillCommandHandler
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
-        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"].Replace("Bearer ", ""));
         var sub = jwtToken.Subject;
 
         var id = request.PathParameters["id"];
@@ -45,11 +42,7 @@ public class AddSkillCommandHandler
         }
 
 
-<<<<<<< HEAD
         var command = JsonSerializer.Deserialize<AddSkillCommand>(request.Body, JsonOptions.Options);
-=======
-        var command = JsonSerializer.Deserialize<AddSkillCommand>(request.Body);
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         command.FreelancerId = Guid.Parse(sub);
 
         var result = await CommandHandler(command);
@@ -57,12 +50,8 @@ public class AddSkillCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-<<<<<<< HEAD
             StatusCode = statusCode,
             Headers = Headers.CORS
-=======
-            StatusCode = statusCode
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 

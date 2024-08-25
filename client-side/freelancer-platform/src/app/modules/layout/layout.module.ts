@@ -14,6 +14,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { chatRoutes } from '../chat/chat.module';
 import { contractRoutes } from '../contract/contract.module';
 import { AuthGuard } from '../auth/helpers/auth.guard';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 const routes: Routes = [
   { path: '', component: HomeComponent, children: [
@@ -36,6 +37,7 @@ const routes: Routes = [
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     JobModule,
     MatMenuModule,
     MatBadgeModule,

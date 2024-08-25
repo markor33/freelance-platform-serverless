@@ -30,14 +30,18 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
 
         public Freelancer() { }
 
-        public static Freelancer Create(Guid userId)
+        public static Freelancer Create(Guid userId, string firstName, string lastName, Contact contact)
         {
             var freelancer = new Freelancer()
             {
-                Id = userId
+                Id = userId,
+                FirstName = firstName,
+                LastName = lastName,
+                Contact = contact,
+                Joined = DateTime.Now
             };
 
-            var @event = new FreelancerCreated(freelancer.Id, userId);
+            var @event = new FreelancerCreated(freelancer.Id, userId, firstName, lastName, contact, freelancer.Joined);
             freelancer.Changes.Add(@event);
 
             return freelancer;
@@ -56,9 +60,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         }
 
         public void SetupProfile(
-            string firstName,
-            string lastName,
-            Contact contact,
             bool isProfilePublic,
             ProfileSummary profileSummary,
             HourlyRate hourlyRate,
@@ -67,7 +68,7 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
             Profession profession,
             LanguageKnowledge languageKnowledge)
         {
-            var @event = new ProfileSetupCompleted(Id, firstName, lastName, contact, isProfilePublic, profileSummary, hourlyRate, 
+            var @event = new ProfileSetupCompleted(Id, isProfilePublic, profileSummary, hourlyRate, 
                 availability, experienceLevel, profession, languageKnowledge);
             Causes(@event);
 
@@ -163,6 +164,10 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate
         private void When(FreelancerCreated @event)
         {
             Id = @event.AggregateId;
+            FirstName = @event.FirstName;
+            LastName = @event.LastName;
+            Contact = @event.Contact;
+            Joined = @event.Joined;
         }
 
         private void When(ProfileSetupCompleted @event)

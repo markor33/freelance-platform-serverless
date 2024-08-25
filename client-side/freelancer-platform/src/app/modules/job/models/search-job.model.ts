@@ -10,10 +10,6 @@ export class SearchJob {
     payment: Payment = new Payment();
     experienceLevel: ExperienceLevel = ExperienceLevel.JUNIOR;
     numOfProposals: number = 0;
-    currentlyInterviewing: number = 0;
-    clientName: string = '';
-    clientTimeZoneId: string = '';
-    clientCountry: string = '';
-    clientCity: string = '';
+    numOfCurrInterviews: number = 0;
     clientAverageRating: number = 0;
 }

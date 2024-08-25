@@ -1,0 +1,457 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Transform" : "AWS::Serverless-2016-10-31",
+  "Description" : "Starting template for an AWS Serverless Application.",
+  "Parameters" : {
+  },
+  "Resources" : {
+    "PermissionJobCreatedSearch": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobCreatedSearchHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::ImportValue": "JobCreatedRuleArn"
+        }
+      }
+    },
+    "JobCreatedSearchLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "OpenSearchAccessPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "es:*",
+                  "Resource": "arn:aws:es:eu-central-1:891376935045:domain/freelance-platform/*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "LambdaBasicExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "JobCreatedSearchHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-JobCreatedHandler",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.JobCreatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": ["JobCreatedSearchLambdaRole", "Arn"]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws",
+            "OPENSEARCH_INDEX": "jobs"
+          }
+        }
+      }
+    },
+
+    "JobUpdatedSearchRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobUpdatedSearchRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobUpdated"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobUpdateSearchHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobUpdatedSearchTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobUpdatedSearch": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobUpdateSearchHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobUpdatedSearchRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobUpdateSearchHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-JobUpdatedHandler",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.JobUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": ["JobCreatedSearchLambdaRole", "Arn"]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws"
+          }
+        }
+      }
+    },
+
+    "ProposalStatusChangedSearchRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "ProposalStatusChangedSearchRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "ProposalStatusChanged"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ProposalStatusChangedSearchHandler",
+                "Arn"
+              ]
+            },
+            "Id": "ProposalStatusChangedSearchTarget"
+          }
+        ]
+      }
+    },
+    "PermissionProposalStatusChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProposalStatusChangedSearchHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ProposalStatusChangedSearchRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ProposalStatusChangedSearchHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-ProposalStatusChangedHandler",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.ProposalStatusChangedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobCreatedSearchLambdaRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws"
+          }
+        }
+      }
+    },
+
+    "JobDoneSearchRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobDoneSearchRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobDone"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobDoneHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobDoneSearchTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobDoneSearch": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobDoneHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobDoneSearchRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobDoneHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-JobDone",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.JobDoneHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": ["JobCreatedSearchLambdaRole", "Arn"]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws"
+          }
+        }
+      }
+    },
+
+    "JobDeletedSearchRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobDeletedSearchRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobDeleted"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobDeletedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobDeletedSearchTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobDeletedSearch": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobDeletedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobDeletedSearchRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobDeletedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-JobDeleted",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.JobDeletedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": ["JobCreatedSearchLambdaRole", "Arn"]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws"
+          }
+        }
+      }
+    },
+
+    "JobStatusChangedSearchRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobStatusChangedSearchRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobStatusChanged"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobStatusChangedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobStatusChangedSearchTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobStatusChangedSearch": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobStatusChangedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobStatusChangedSearchRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobStatusChangedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-search-sync-JobStatusChanged",
+        "Handler": "JobSearch.Lambda::JobSearch.Lambda.Handlers.JobStatusChangedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": ["JobCreatedSearchLambdaRole", "Arn"]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ],
+        "Environment": {
+          "Variables": {
+            "OPENSEARCH_URL": "https://search-freelance-platform-3k7qrnvdu3nrab42g6pbt6hvh4.aos.eu-central-1.on.aws"
+          }
+        }
+      }
+    }
+  },
+  "Outputs" : {
+      "JobCreatedSearchHandlerArn": {
+          "Description": "ARN of the Job Created Search Lambda Function",
+          "Value": {
+            "Fn::GetAtt": ["JobCreatedSearchHandler", "Arn"]
+          },
+          "Export": {
+            "Name": "JobCreatedSearchHandlerArn"
+          }
+        }
+  }
+}

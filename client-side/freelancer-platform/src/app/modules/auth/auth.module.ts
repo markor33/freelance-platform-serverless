@@ -14,16 +14,17 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
 import { SharedModule } from '../shared/shared.module';
 import { CallbackComponent } from './callback/callback.component';
-import { ChooseRoleDialogComponent } from './choose-role-dialog/choose-role-dialog.component';
+import {RegisterComponent} from "./register/register.component";
 
 const routes: Routes = [
-  { path: 'auth-callback', component: CallbackComponent }
+  { path: 'auth-callback', component: CallbackComponent },
+  { path: 'auth/register', component: RegisterComponent }
 ];
 
 @NgModule({
   declarations: [
     CallbackComponent,
-    ChooseRoleDialogComponent
+    RegisterComponent
   ],
   imports: [
     CommonModule,

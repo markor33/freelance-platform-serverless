@@ -31,16 +31,16 @@ export const handler = async (event) => {
 
         const connectionMapping = await getCMBySubAsync(sendToId);
 
-        if (!connectionMapping) {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ message: 'Connection not found' })
-            };
-        }
-
-        const responseMessage = {
+		const responseMessage = {
             action: 'newMessage',
             body: { ...message }
+        }
+
+        if (!connectionMapping.ConnectionId) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify(responseMessage)
+            };
         }
 
         await sendMessageToConnectionAsync(connectionMapping.ConnectionId, responseMessage);

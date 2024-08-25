@@ -14,7 +14,11 @@ public class FreelancerCreatedHandler
     {
         var freelancerViewModel = new FreelancerViewModel()
         {
-            Id = @event.Detail.UserId
+            Id = @event.Detail.UserId,
+            FirstName = @event.Detail.FirstName,
+            LastName = @event.Detail.LastName,
+            Contact = @event.Detail.Contact,
+            Joined = @event.Detail.Joined,
         };
 
         await _repository.SaveAsync(freelancerViewModel);

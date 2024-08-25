@@ -31,7 +31,7 @@ public class DeleteEmploymentCommandHandler
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
-        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"].Replace("Bearer ", ""));
         var sub = jwtToken.Subject;
 
         var id = request.PathParameters["id"];

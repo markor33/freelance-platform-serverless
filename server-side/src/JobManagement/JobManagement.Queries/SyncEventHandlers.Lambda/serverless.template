@@ -115,6 +115,10 @@
               ]
             },
             "Id": "JobCreatedTarget"
+          },
+          {
+            "Arn": { "Fn::ImportValue": "JobCreatedSearchHandlerArn" },
+            "Id": "JobCreatedSearchTarget"
           }
         ]
       }
@@ -205,6 +209,201 @@
       "Properties": {
         "FunctionName": "jms-queries-sync-JobUpdatedHandler",
         "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.JobUpdatedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "JobDoneRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobDoneRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobDone"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobDoneHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobDoneTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobDoneChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobDoneHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobDoneRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobDoneHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-JobDone",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.JobDoneHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "JobDeletedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobDeletedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobDeleted"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobDeletedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobDeletedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobDeletedChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobDeletedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobDeletedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobDeletedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-JobDeleted",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.JobDeletedHandler::FunctionHandler",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "Description": "Default function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+            "Fn::GetAtt": [ "JobLambdaQuerySyncRole", "Arn" ]
+        },
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Layers": [
+            "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
+        ]
+      }
+    },
+
+    "JobStatusChangedRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "JobStatusChangedRule",
+        "EventBusName": {
+          "Fn::ImportValue": "FPEventBusArn"
+        },
+        "EventPattern": {
+          "source": [
+            "job-service"
+          ],
+          "detail-type": [
+            "JobStatusChanged"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobStatusChangedHandler",
+                "Arn"
+              ]
+            },
+            "Id": "JobStatusChangedTarget"
+          }
+        ]
+      }
+    },
+    "PermissionJobStatusChangedChanged": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobStatusChangedHandler"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "JobStatusChangedRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "JobStatusChangedHandler" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": "jms-queries-sync-JobStatusChanged",
+        "Handler": "SyncEventHandlers.Lambda::SyncEventHandlers.Lambda.Handlers.JobStatusChangedHandler::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
         "Description": "Default function",
@@ -607,6 +806,17 @@
         "Layers": [
             "arn:aws:lambda:eu-central-1:891376935045:layer:CommonLayer:3"
         ]
+      }
+    }
+  },
+  "Outputs": {
+    "JobCreatedRuleArn": {
+      "Description": "ARN of the Job Created EventBridge Rule",
+      "Value": {
+        "Fn::GetAtt": ["JobCreatedRule", "Arn"]
+      },
+      "Export": {
+            "Name": "JobCreatedRuleArn"
       }
     }
   }

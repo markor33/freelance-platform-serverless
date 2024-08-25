@@ -1,10 +1,7 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-<<<<<<< HEAD
 using Common.Layer.Headers;
 using Common.Layer.JsonOptions;
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Entities;
@@ -51,7 +48,7 @@ public class SetupProfileCommandHandler
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
         _context = context;
-        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"].Replace("Bearer ", ""));
         var sub = jwtToken.Subject;
 
         var id = request.PathParameters["id"];
@@ -65,12 +62,7 @@ public class SetupProfileCommandHandler
             };
         }
 
-
-<<<<<<< HEAD
         var command = JsonSerializer.Deserialize<SetupProfileCommand>(request.Body, JsonOptions.Options);
-=======
-        var command = JsonSerializer.Deserialize<SetupProfileCommand>(request.Body);
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         command.FreelancerId = Guid.Parse(sub);
 
         var validationResult = _validator.Validate(command);
@@ -90,12 +82,8 @@ public class SetupProfileCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-<<<<<<< HEAD
             StatusCode = statusCode,
             Headers = Headers.CORS
-=======
-            StatusCode = statusCode
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 
@@ -117,8 +105,7 @@ public class SetupProfileCommandHandler
 
             var languageKnowledge = new LanguageKnowledge(language, request.LanguageProficiencyLevel);
 
-            freelancer.SetupProfile(request.FirstName, request.LastName, request.Contact, 
-                request.IsProfilePublic, request.ProfileSummary, request.HourlyRate,
+            freelancer.SetupProfile(request.IsProfilePublic, request.ProfileSummary, request.HourlyRate,
                     request.Availability, request.ExperienceLevel, profession, languageKnowledge);
 
             await _freelancerRepository.SaveAsync(freelancer);
@@ -139,9 +126,6 @@ public class SetupProfileCommandHandler
 public class SetupProfileCommand
 {
     public Guid FreelancerId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public Contact Contact { get; set; }
     public bool IsProfilePublic { get; set; }
     public ProfileSummary ProfileSummary { get; set; }
     public HourlyRate HourlyRate { get; set; }
@@ -156,18 +140,6 @@ public class SetupProfileCommandValidator : AbstractValidator<SetupProfileComman
 {
     public SetupProfileCommandValidator()
     {
-        RuleFor(x => x.FirstName).NotEmpty();
-
-        RuleFor(x => x.LastName).NotEmpty();
-
-        RuleFor(x => x.Contact.PhoneNumber).NotEmpty();
-
-        RuleFor(x => x.Contact.Address.Country).NotEmpty();
-        RuleFor(x => x.Contact.Address.City).NotEmpty();
-        RuleFor(x => x.Contact.Address.Street).NotEmpty();
-        RuleFor(x => x.Contact.Address.Number).NotEmpty();
-        RuleFor(x => x.Contact.Address.ZipCode).NotEmpty();
-
         RuleFor(x => x.IsProfilePublic).NotEmpty();
 
         RuleFor(x => x.ProfileSummary.Title).NotEmpty().MaximumLength(50);

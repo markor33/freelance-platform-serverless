@@ -20,7 +20,7 @@ public record JobViewModel
     public int CurrentlyInterviewing { get; set; }
     public int NumOfActiveContracts { get; set; }
     public int NumOfFinishedContracts { get; set; }
-    public JobStatus Status { get; private set; }
+    public JobStatus Status { get; set; }
     public List<QuestionViewModel> Questions { get; set; }
     public ProfessionViewModel Profession { get; set; }
     public List<SkillViewModel> Skills { get; set; }

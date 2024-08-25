@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { signInWithRedirect, signOut, fetchAuthSession, getCurrentUser } from "aws-amplify/auth"
 import {getRoleFromString, Role} from "../../shared/models/role.model";
 import {HttpClient} from "@angular/common/http";
+import {Registration} from "../models/registration.model";
 
 @Injectable({
   providedIn: 'root'
@@ -37,15 +38,8 @@ export class AuthService {
     signInWithRedirect();
   }
 
-  chooseRole(role: Role): Observable<boolean> {
-    return this.httpClient.put('api/identity-service/role', { role })
-      .pipe(
-        map(response => {
-          this.roleSource.next(role);
-          return true;
-        }),
-        catchError(error => of(false))
-      )
+  register(registration: Registration): Observable<any> {
+    return this.httpClient.post<any>('api/identity-service/user', registration);
   }
 
   logout(): void {

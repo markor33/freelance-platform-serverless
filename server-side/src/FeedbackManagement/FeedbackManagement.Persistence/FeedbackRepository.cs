@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2;
 using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
+using System.Collections;
 
 namespace FeedbackManagement.Persistence;
 
@@ -10,6 +11,7 @@ public interface IFeedbackRepository
     Task<FinishedContract> GetById(Guid id);
     Task<List<FinishedContract>> GetByFreelancer(Guid freelancerId);
     Task<Dictionary<Guid, double>> GetAverageRatingByFreelancers(HashSet<Guid> freelancerIds);
+    Task<Dictionary<Guid, double>> GetAverageRatingByClients(HashSet<Guid> clientIds);
     Task SaveAsync(FinishedContract finishedContract);
 }
 
@@ -65,25 +67,73 @@ public class FeedbackRepository : IFeedbackRepository
 
         foreach (var group in groupedContracts)
         {
-            var freelancerId = group.Key;
+            var id = group.Key;
             var feedbacks = group.Select(fc => fc.ClientFeedback).Where(f => f != null);
 
             if (feedbacks.Any())
             {
                 var averageRating = feedbacks.Average(f => f.Rating);
-                result[freelancerId] = averageRating;
+                result[id] = averageRating;
             }
             else
             {
-                result[freelancerId] = 0;
+                result[id] = 0;
             }
         }
 
-        foreach (var freelancerId in freelancerIds)
+        foreach (var id in freelancerIds)
         {
-            if (!result.ContainsKey(freelancerId))
+            if (!result.ContainsKey(id))
             {
-                result[freelancerId] = 0;
+                result[id] = 0;
+            }
+        }
+
+        return result;
+    }
+
+    public async Task<Dictionary<Guid, double>> GetAverageRatingByClients(HashSet<Guid> clientIds)
+    {
+        var result = new Dictionary<Guid, double>();
+
+        var queryConditions = new List<ScanCondition>
+        {
+            new("ClientId", ScanOperator.In, clientIds.Select(x => (object)x).ToArray()),
+            new("FreelancerFeedback", ScanOperator.IsNotNull)
+        };
+
+        var search = _context.ScanAsync<FinishedContract>(queryConditions);
+
+        var allContracts = new List<FinishedContract>();
+        do
+        {
+            var batch = await search.GetNextSetAsync();
+            allContracts.AddRange(batch);
+        } while (!search.IsDone);
+
+        var groupedContracts = allContracts.GroupBy(fc => fc.ClientId);
+
+        foreach (var group in groupedContracts)
+        {
+            var id = group.Key;
+            var feedbacks = group.Select(fc => fc.FreelancerFeedback).Where(f => f != null);
+
+            if (feedbacks.Any())
+            {
+                var averageRating = feedbacks.Average(f => f.Rating);
+                result[id] = averageRating;
+            }
+            else
+            {
+                result[id] = 0;
+            }
+        }
+
+        foreach (var id in clientIds)
+        {
+            if (!result.ContainsKey(id))
+            {
+                result[id] = 0;
             }
         }
 

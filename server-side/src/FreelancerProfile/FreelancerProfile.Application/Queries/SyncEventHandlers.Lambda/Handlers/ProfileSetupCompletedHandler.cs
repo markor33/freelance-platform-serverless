@@ -16,9 +16,6 @@ public class ProfileSetupCompletedHandler
 
         var freelancerViewModel = await _repository.GetByIdAsync(@event.Detail.AggregateId);
 
-        freelancerViewModel.FirstName = detail.FirstName;
-        freelancerViewModel.LastName = detail.LastName;
-        freelancerViewModel.Contact = detail.Contact;
         freelancerViewModel.IsProfilePublic = detail.IsProfilePublic;
         freelancerViewModel.ProfileSummary = detail.ProfileSummary;
         freelancerViewModel.HourlyRate = detail.HourlyRate;

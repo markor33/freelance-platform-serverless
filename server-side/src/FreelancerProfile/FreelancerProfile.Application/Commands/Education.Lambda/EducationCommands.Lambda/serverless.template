@@ -47,10 +47,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
-<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "POST",
         "ResourceId": {
           "Ref": "FreelancerByIdEducationResource"
@@ -136,10 +133,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
-<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "PUT",
         "ResourceId": {
           "Ref": "FreelancerByIdEducationByIdResource"
@@ -214,10 +208,7 @@
         "AuthorizerId": {
           "Fn::ImportValue": "CognitoAuthorizerId"
         },
-<<<<<<< HEAD
         "AuthorizationScopes": [ "FRS/rw" ],
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         "HttpMethod": "DELETE",
         "ResourceId": {
           "Ref": "FreelancerByIdEducationByIdResource"

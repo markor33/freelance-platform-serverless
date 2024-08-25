@@ -8,9 +8,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
 {
     public class ProfileSetupCompleted : DomainEvent
     {
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public Contact Contact { get; private set; }
         public bool IsProfilePublic { get; private set; }
         public ProfileSummary ProfileSummary { get; private set; }
         public HourlyRate HourlyRate { get; private set; }
@@ -23,9 +20,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
 
        public ProfileSetupCompleted(
             Guid freelancerId,
-            string firstName,
-            string lastName,
-            Contact contact,
             bool isProfilePublic,
             ProfileSummary profileSummary,
             HourlyRate hourlyRate,
@@ -34,9 +28,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
             Profession profession,
             LanguageKnowledge languageKnowledge) : base(freelancerId)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Contact = contact;
             IsProfilePublic = isProfilePublic;
             ProfileSummary = profileSummary;
             HourlyRate = hourlyRate;
@@ -50,9 +41,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
         [JsonConstructor]
         public ProfileSetupCompleted(
             Guid aggregateId,
-            string firstName,
-            string lastName,
-            Contact contact,
             bool isProfilePublic, 
             ProfileSummary profileSummary, 
             HourlyRate hourlyRate, 
@@ -61,9 +49,6 @@ namespace FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.Events
             Guid professionId, 
             LanguageKnowledge languageKnowledge) : base(aggregateId)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Contact = contact;
             IsProfilePublic = isProfilePublic;
             ProfileSummary = profileSummary;
             HourlyRate = hourlyRate;

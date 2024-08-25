@@ -5,7 +5,7 @@ import { CreateJobCommand } from '../models/commands/create-job-command.model';
 import { Job } from '../models/job.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { SearchJob } from '../models/search-job.model';
-import { SearchJobFilters } from '../models/search-job-filters.model';
+import { JobSearchParams } from '../models/job-search-params.model';
 import { EditJobCommand } from '../models/commands/edit-job-command.model';
 
 @Injectable({
@@ -27,17 +27,8 @@ export class JobService {
     });
   }
 
-  search(queryText: string, filters: SearchJobFilters): Observable<SearchJob[]>  {
-    let url = `api/aggregator/job?`;
-    if (queryText !== '') url += `queryText=${queryText}&`;
-    const professions = filters.professions.map((p) => `Professions=${p}&`);
-    if (professions.length !== 0) url += professions.join('');
-    const experienceLevels = filters.experienceLevels.map((exp) => `ExperienceLevels=${exp}&`);
-    if (experienceLevels.length !== 0) url += experienceLevels.join('');
-    const paymentTypes = filters.paymentTypes.map((p) => `PaymentTypes=${p}&`);
-    if (paymentTypes.length !== 0) url += paymentTypes.join('')
-
-    return this.httpClient.get<SearchJob[]>(url);
+  search(params: JobSearchParams): Observable<SearchJob[]>  {
+    return this.httpClient.post<SearchJob[]>('api/aggregator-service/job', params, this.httpOptions);
   }
 
   create(createJobCommand: CreateJobCommand): Observable<Job> {
@@ -62,11 +53,11 @@ export class JobService {
   }
 
   done(id: string): Observable<void> {
-    return this.httpClient.put<any>(`api/job/job/${id}/status/done`, this.httpOptions);
+    return this.httpClient.put<any>(`local/api/job/${id}/status/done`, this.httpOptions);
   }
 
   delete(id: string): Observable<void> {
-    return this.httpClient.delete<any>(`api/job/job/${id}`, this.httpOptions);
+    return this.httpClient.delete<any>(`local/api/job/${id}`, this.httpOptions);
   }
 
 }

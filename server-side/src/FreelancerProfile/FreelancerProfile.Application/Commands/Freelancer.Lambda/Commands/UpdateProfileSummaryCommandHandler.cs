@@ -1,10 +1,7 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-<<<<<<< HEAD
 using Common.Layer.Headers;
 using Common.Layer.JsonOptions;
-=======
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
 using FluentResults;
 using FluentValidation;
 using FreelancerProfile.Domain.AggregatesModel.FreelancerAggregate.ValueObjects;
@@ -30,7 +27,7 @@ public class UpdateProfileSummaryCommandHandler
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
      {
         _context = context;
-        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"]);
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(request.Headers["Authorization"].Replace("Bearer ", ""));
         var sub = jwtToken.Subject;
 
         var id = request.PathParameters["id"];
@@ -44,11 +41,7 @@ public class UpdateProfileSummaryCommandHandler
             };
         }
 
-<<<<<<< HEAD
         var profileSummary = JsonSerializer.Deserialize<ProfileSummary>(request.Body, JsonOptions.Options);
-=======
-        var profileSummary = JsonSerializer.Deserialize<ProfileSummary>(request.Body);
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         var command = new UpdateProfileSummaryCommand(Guid.Parse(sub), profileSummary);
 
         var validationResult = _validator.Validate(command);
@@ -68,12 +61,8 @@ public class UpdateProfileSummaryCommandHandler
 
         return new APIGatewayProxyResponse()
         {
-<<<<<<< HEAD
             StatusCode = statusCode,
             Headers = Headers.CORS
-=======
-            StatusCode = statusCode
->>>>>>> 35a2ed2d0888ac63a9b73bafecb99561ac716fd1
         };
     }
 

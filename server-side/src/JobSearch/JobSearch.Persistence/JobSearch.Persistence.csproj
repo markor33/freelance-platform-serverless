@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aws4RequestSigner" Version="1.0.3" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.400.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobSearch.IndexModel\JobSearch.IndexModel.csproj" />
+  </ItemGroup>
+
+</Project>

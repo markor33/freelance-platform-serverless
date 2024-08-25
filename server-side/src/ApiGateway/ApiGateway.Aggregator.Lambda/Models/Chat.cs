@@ -23,7 +23,7 @@ public class Chat
         JobId = chat.JobId;
         JobTitle = job.Title;
         ProposalId = chat.ProposalId;
-        ClientId = chat.Id;
+        ClientId = chat.ClientId;
         IsClientActive = true;
         ClientName = client.FirstName + " " + client.LastName;
         FreelancerId = chat.Id;

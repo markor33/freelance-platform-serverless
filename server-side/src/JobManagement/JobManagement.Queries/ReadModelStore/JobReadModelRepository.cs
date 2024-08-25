@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using ReadModel;
 using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
+using JobManagement.Domain.AggregatesModel.JobAggregate.Enums;
 
 namespace ReadModelStore;
 
@@ -39,7 +40,8 @@ public class JobReadModelRepository : IJobReadModelRepository
     {
         var queryConditions = new List<ScanCondition>
             {
-                new("ClientId", ScanOperator.Equal, clientId)
+                new("ClientId", ScanOperator.Equal, clientId),
+                new("Status", ScanOperator.NotEqual, JobStatus.REMOVED)
             };
         var clientJobs = await _context.ScanAsync<JobViewModel>(queryConditions).GetRemainingAsync();
         return clientJobs;

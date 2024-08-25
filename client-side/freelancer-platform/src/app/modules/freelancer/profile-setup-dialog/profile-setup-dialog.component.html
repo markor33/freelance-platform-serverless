@@ -4,57 +4,6 @@
         <form [formGroup]="generalFormGroup">
             <ng-template matStepLabel>General</ng-template>
             <div class="general-info-container">
-              <div class="domain-user-container" style="display: flex; flex-direction: column">
-                <mat-form-field appearance="outline">
-                  <mat-icon matPrefix>person</mat-icon>
-                  <mat-label>First name</mat-label>
-                  <input matInput type="text" formControlName="firstName">
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-icon matPrefix>person</mat-icon>
-                  <mat-label>Last name</mat-label>
-                  <input matInput type="text" formControlName="lastName">
-                </mat-form-field>
-                <div class="contact-container" formGroupName="contact">
-                    <div class="address-container" style="display: flex; flex-direction: column" formGroupName="address">
-                      <div>
-                        <mat-form-field appearance="outline">
-                          <mat-icon matPrefix>flag</mat-icon>
-                          <mat-label>Country</mat-label>
-                          <input matInput type="text" formControlName="country">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-icon matPrefix>location_city</mat-icon>
-                          <mat-label>City</mat-label>
-                          <input matInput type="text" formControlName="city">
-                        </mat-form-field>
-                      </div>
-                      <mat-form-field appearance="outline">
-                        <mat-icon matPrefix>signpost</mat-icon>
-                        <mat-label>Street</mat-label>
-                        <input matInput type="text" formControlName="street">
-                      </mat-form-field>
-                      <div>
-                        <mat-form-field appearance="outline">
-                          <mat-icon matPrefix>looks_one</mat-icon>
-                          <mat-label>Number</mat-label>
-                          <input matInput type="text" formControlName="number">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-icon matPrefix>pin</mat-icon>
-                          <mat-label>Zip code</mat-label>
-                          <input matInput type="text" formControlName="zipCode">
-                        </mat-form-field>
-                      </div>
-                    </div>
-                    <mat-form-field appearance="outline">
-                      <mat-icon matPrefix>call</mat-icon>
-                      <mat-label>Phone number</mat-label>
-                      <input matInput type="text" formControlName="phoneNumber">
-                      <span matTextPrefix>+&nbsp;</span>
-                    </mat-form-field>
-                </div>
-              </div>
                 <div class="name-container">
                     <mat-form-field>
                         <mat-label>Availability</mat-label>

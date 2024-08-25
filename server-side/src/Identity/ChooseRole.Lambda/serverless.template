@@ -16,13 +16,13 @@
         }
       }
     },
-    "RoleResource": {
+    "UserResource": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "ParentId": {
           "Ref": "IdentityServiceResource"
         },
-        "PathPart": "role",
+        "PathPart": "user",
         "RestApiId": {
           "Fn::ImportValue": "FreelancerRestApiId"
         }
@@ -31,13 +31,9 @@
     "ChooseRoleMethod": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Fn::ImportValue": "CognitoAuthorizerId"
-        },
-        "HttpMethod": "PUT",
+        "HttpMethod": "POST",
         "ResourceId": {
-          "Ref": "RoleResource"
+          "Ref": "UserResource"
         },
         "RestApiId": {
           "Fn::ImportValue": "FreelancerRestApiId"
@@ -46,15 +42,15 @@
           "Type": "AWS_PROXY",
           "IntegrationHttpMethod": "POST",
           "Uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChooseRole.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateUser.Arn}/invocations"
           }
         }
       }
     },
-    "ChooseRoleIAM": {
+    "CreateUserIAM": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "RoleName": "ChooseRoleIAM",
+        "RoleName": "CreateUserIAM",
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -79,11 +75,42 @@
                 {
                   "Effect": "Allow",
                   "Action": [
+                    "cognito-idp:SignUp",
                     "cognito-idp:AdminAddUserToGroup",
                     "cognito-idp:AdminListGroupsForUser",
                     "cognito-idp:ListUsers"
                   ],
                   "Resource": "arn:aws:cognito-idp:eu-central-1:891376935045:userpool/eu-central-1_yP2OhxI3R"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": {
+                      "Fn::ImportValue": "ClientProfileTableArn"
+                    }
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:PutItem",
+                      "dynamodb:UpdateItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:Query",
+                      "dynamodb:Scan",
+                      "dynamodb:DescribeTable",
+                      "dynamodb:BatchWriteItem"
+                    ],
+                    "Resource": {
+                      "Fn::ImportValue": "FPEventStoreArn"
+                    }
                 },
                 {
                   "Effect": "Allow",
@@ -104,13 +131,13 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
-          "Ref": "ChooseRole"
+          "Ref": "CreateUser"
         },
         "Action": "lambda:InvokeFunction",
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Sub": [
-            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/PUT/identity-service/role",
+            "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/POST/identity-service/user",
             {
               "ApiId": {
                 "Fn::ImportValue": "FreelancerRestApiId"
@@ -120,10 +147,10 @@
         }
       }
     },
-    "ChooseRole": {
+    "CreateUser": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "FunctionName": "ChooseRole",
+        "FunctionName": "ids-CreateUser",
         "Handler": "ChooseRole.Lambda::ChooseRole.Lambda.Function::FunctionHandler",
         "Runtime": "dotnet8",
         "CodeUri": "",
@@ -132,7 +159,7 @@
         "Timeout": 30,
         "Role": {
           "Fn::GetAtt": [
-            "ChooseRoleIAM",
+            "CreateUserIAM",
             "Arn"
           ]
         },

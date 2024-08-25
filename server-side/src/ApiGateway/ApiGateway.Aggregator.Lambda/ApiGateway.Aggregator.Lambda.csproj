@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\FeedbackManagement\FeedbackManagement.Persistence\FeedbackManagement.Persistence.csproj" />
     <ProjectReference Include="..\..\FreelancerProfile\FreelancerProfile.Persistence\ReadModelStore\FreelancerProfile.ReadModelStore.csproj" />
     <ProjectReference Include="..\..\JobManagement\JobManagement.Queries\ReadModelStore\JobManagement.ReadModelStore.csproj" />
+    <ProjectReference Include="..\..\JobSearch\JobSearch.Persistence\JobSearch.Persistence.csproj" />
     <ProjectReference Include="..\..\RealTime\RealTime.Chat\RealTime.Chat.Persistence\RealTime.Chat.Persistence.csproj" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ import {NotificationService} from '../../notification/services/notification.serv
 import {ChatService} from '../../chat/services/chat.service';
 import {Router} from '@angular/router';
 import {FreelancerService} from '../../freelancer/services/freelancer.service';
-import {ChooseRoleDialogComponent} from "../../auth/choose-role-dialog/choose-role-dialog.component";
 import {Role} from "../../shared/models/role.model";
 
 @Component({
@@ -33,8 +32,6 @@ export class HomeComponent {
   ) {
       this.authService.userObserver.subscribe({
         next: (user) => {
-          if (!this.authService.hasRole())
-            ChooseRoleDialogComponent.open(this.dialog);
           this.userDomainId = user?.userId;
           this.isUserLogged = this.authService.isLogged();
           this.userRole = this.authService.getUserRole();
@@ -42,11 +39,12 @@ export class HomeComponent {
       });
 
       this.authService.roleObserver.subscribe((role) => {
-        if (!role)
+        if (role === undefined)
           return;
 
         if (role as Role === Role.Freelancer) {
           this.freelancerService.profileSetupCompletedObserver.subscribe((isCompleted) => {
+            console.log(isCompleted);
             if (isCompleted === false)
               CompleteRegisterDialogComponent.open(this.dialog);
           });

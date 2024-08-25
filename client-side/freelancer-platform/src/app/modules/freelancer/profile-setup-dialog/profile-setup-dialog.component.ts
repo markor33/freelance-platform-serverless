@@ -35,18 +35,6 @@ export class CompleteRegisterDialogComponent {
   role: Role = Role.Freelancer;
 
   generalFormGroup = this.formBuilder.group({
-    firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', Validators.required),
-    contact: this.formBuilder.group({
-      phoneNumber: new FormControl('', Validators.required),
-      address: this.formBuilder.group({
-        country: new FormControl('', Validators.required),
-        city: new FormControl('', Validators.required),
-        street: new FormControl('', Validators.required),
-        number: new FormControl('', Validators.required),
-        zipCode: new FormControl('', Validators.required),
-      })
-    }),
     isProfilePublic: new FormControl(true, Validators.required),
     availability: new FormControl(0, Validators.required),
   });

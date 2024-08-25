@@ -43,9 +43,33 @@ export class FreelancerService {
   }
 
   setProfilePicture(profilePicture: File): Observable<string> {
-    var form = new FormData();
-    form.append('profilePicture', profilePicture);
-    return this.httpClient.put<string>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/profile-picture`, form);
+    const reader = new FileReader();
+
+    return new Observable<string>((observer) => {
+      reader.onloadend = () => {
+        const pictureBase64 = reader.result?.toString().split(',')[1]; // Remove the `data:image/...;base64,` prefix
+        const body = {
+          pictureBase64: pictureBase64
+        };
+        this.httpClient
+          .put<string>(`api/freelancer-service/freelancer/${this.currentFreelancer.id}/profile-picture`, body)
+          .subscribe({
+            next: (result) => {
+              observer.next(result);
+              observer.complete();
+            },
+            error: (error) => {
+              observer.error(error);
+            }
+          });
+      };
+
+      reader.onerror = (error) => {
+        observer.error(error);
+      };
+
+      reader.readAsDataURL(profilePicture);
+    });
   }
 
   editProfileSummary(profileSummary: ProfileSummary): Observable<void> {

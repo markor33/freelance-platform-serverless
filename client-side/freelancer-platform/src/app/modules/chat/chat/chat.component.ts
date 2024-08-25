@@ -80,10 +80,12 @@ export class ChatComponent {
   }
 
   getSender(message: Message) {
+    console.log(message);
+    console.log(this.activeChat);
     if (this.activeChat?.clientId == message.senderId)
       return { name: this.activeChat.clientName}
     else
-    return { name: this.activeChat?.freelancerName}
+      return { name: this.activeChat?.freelancerName}
   }
 
 }
