@@ -20,11 +20,9 @@ public class ContractScenario : BaseIntegrationTest
     [Fact]
     public async Task Finish_Contract_ReturnsOk()
     {
-        var contractId = fixture.CreateContract();
-        var command = new FinishContractCommand(DependecyFixture.JobId, contractId);
         var commandHandler = new FinishContractCommandHandler(fixture.JobRepository, fixture.EventBridge);
 
-        var result = await commandHandler.Handle(command, CancellationToken.None);
+        var result = await commandHandler.Handle(GetTestFinishContractCommand(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -32,11 +30,9 @@ public class ContractScenario : BaseIntegrationTest
     [Fact]
     public async Task Terminate_Contract_ReturnsOk()
     {
-        var contractId = fixture.CreateContract();
-        var command = new TerminateContractCommand(DependecyFixture.JobId, contractId);
         var commandHandler = new TerminateContractCommandHandler(fixture.JobRepository);
 
-        var result = await commandHandler.Handle(command, CancellationToken.None);
+        var result = await commandHandler.Handle(GetTestTerminateContractCommand(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -44,4 +40,9 @@ public class ContractScenario : BaseIntegrationTest
     private static MakeContractCommand GetTestMakeContractCommand()
         => new MakeContractCommand(DependecyFixture.JobId, DependecyFixture.ProposalId);
 
+    private static FinishContractCommand GetTestFinishContractCommand()
+        => new(DependecyFixture.JobId, DependecyFixture.ContractId);
+
+    private static TerminateContractCommand GetTestTerminateContractCommand()
+        => new(DependecyFixture.JobId, DependecyFixture.ContractId);
 }
