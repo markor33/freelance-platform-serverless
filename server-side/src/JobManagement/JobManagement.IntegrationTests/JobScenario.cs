@@ -42,6 +42,7 @@ public class JobScenario : BaseIntegrationTest
     [Fact]
     public async Task Job_Done_HasActiveContracts_ReturnsBadRequest()
     {
+        fixture.CreateContract();
         var commandHandler = new JobDoneCommandHandler(fixture.JobRepository);
 
         var result = await commandHandler.Handle(GetTestJobDoneCommand(DependecyFixture.JobId), CancellationToken.None);
@@ -62,6 +63,7 @@ public class JobScenario : BaseIntegrationTest
     [Fact]
     public async Task Job_Delete_HasContracts_ReturnsBadRequest()
     {
+        fixture.CreateContract();
         var commandHandler = new DeleteJobCommandHandler(fixture.JobRepository);
 
         var result = await commandHandler.Handle(GetTestDeleteJobCommand(DependecyFixture.JobId), CancellationToken.None);

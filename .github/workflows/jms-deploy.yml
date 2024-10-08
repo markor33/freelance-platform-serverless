@@ -1,0 +1,50 @@
+name: jms-deploy
+
+on:
+    workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI }}
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v3
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            - name: Log in to Amazon ECR
+              id: ecr-login
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build, tag, and push Docker image
+              env:
+                IMAGE_TAG: ${{ github.sha }}
+              run: |
+               cd server-side/src/JobManagement
+               docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
+               docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+
+            - name: Render Amazon ECS task definition
+              id: render-jms-commands-container
+              uses: aws-actions/amazon-ecs-render-task-definition@v1.5.0
+              with:
+                task-definition: server-side/src/JobManagement/JobManagement.API/task-definition.json
+                container-name: jms-commands
+                image: "${{ secrets.ECR_REPOSITORY_URI }}:${{ github.sha }}"
+
+            - name: Deploy to Amazon ECS service
+              uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+              with:
+                task-definition: ${{ steps.render-jms-commands-container.outputs.task-definition }}
+                service: jms-commands
+                cluster: FreelancerPlatformDev

@@ -1,0 +1,44 @@
+name: jms-build-test
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - server-side/src/JobManagement/**
+            - .github/workflows/jms-build-test.yml
+    workflow_dispatch:
+
+jobs:
+    build-test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Build
+              run: |
+                cd server-side
+                dotnet restore "FreelancePlatform.sln"
+                cd src/JobManagement/
+                for project in $(find . -name "*.csproj"); do
+                    echo "Building $project"
+                    dotnet build --no-restore "$project"
+                done
+
+            - name: Test
+              run: |
+                cd server-side
+                dotnet restore "FreelancePlatform.sln"
+                cd src/JobManagement/JobManagement.IntegrationTests
+                dotnet build --no-restore
+                dotnet test --no-build -v=normal
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v2.3.0
+              with:
+                args: >
+                    -Dsonar.organization=markor33
+                    -Dsonar.projectKey=markor33_freelance-platform-serverless
+              env:
+                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            
